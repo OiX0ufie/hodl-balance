@@ -212,7 +212,6 @@
 
             var importData = function() {
                 var data = $('#importWrapper textarea').val();
-                console.log(data);
                 if(data.length > 0) {
                     $('#importWrapper textarea').val('');
                     Cookies.set('hodl', data, { expires: 365 });
@@ -305,7 +304,9 @@
                     $('#balanceWrapper').removeClass('d-none');
                 }
                 else if('init' == action) {
-                    resetForm();
+                    if(configOk) {
+                        resetForm();
+                    }
                     $('.actionWrapper').addClass('d-none');
                     $('#initWrapper').removeClass('d-none');
                 }
@@ -330,7 +331,7 @@
             var currentEncryptionKey = '';
             var configOk = false;
             $(document).ready(function() {
-                resetForm();
+                loadCookieData();
                 setAction(window.location.hash.substr(1));
             });
         </script>
