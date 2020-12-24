@@ -330,6 +330,7 @@
             var currentEncryptionKey = '';
             var configOk = false;
             $(document).ready(function() {
+                resetForm();
                 setAction(window.location.hash.substr(1));
             });
         </script>
