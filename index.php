@@ -239,7 +239,7 @@
             }
 
             var propagateForm = function(data, encryptionKey) {
-                $('#showBalance').addClass('d-none');
+                $('.balanceActionContent').addClass('d-none');
                 $('#hodlForm input[name="encryptionKey"]').val(currentEncryptionKey);
                 $('#hodlForm tbody .entry').remove();
                 if(null == data) {
@@ -254,7 +254,7 @@
                             for(i = 0; i < data.entries.length; i++) {
                                 addEntry(data.entries[i]);
                             }
-                            $('#showBalance').removeClass('d-none');
+                            $('.balanceActionContent').removeClass('d-none');
                             configOk = true;
                         }
                     }
@@ -358,7 +358,10 @@
             <div id="initWrapper" class="actionWrapper d-none">
                 <div class="row mt-4 mb-2">
                     <div class="col">
-                        <h2 class="float-right" style="display: inline-block; font-weight: 300; font-size: 1.5rem; margin-top: 0.9rem;">to the moon <i class="fa fa-rocket"></i></h2>
+                        <div class="float-right" style="display: inline-block; margin-top: 0.42em;">
+                            <button type="button" class="balanceActionContent btn btn-primary mr-2 d-none"onclick="setAction('balance'); return false;" title="show balance"><i class="fa fa-coins"></i></button>
+                            <h2 style="display: inline-block; font-weight: 300; font-size: 1.5rem; position: relative; top: 0.3em;">to the moon <i class="fa fa-rocket"></i></h2>
+                        </div>
                         <h1 style="display: inline-block;"><i class="fa fa-coins"></i> Hodl</h1>
                     </div>
                 </div>
@@ -391,7 +394,6 @@
                                         </th>
                                         <th class="align-top text-right">
                                             <div class="btn-group">
-                                                <button type="button" class="btn btn-primary" onclick="setAction('balance'); return false;" title="show balance"><i class="fa fa-coins"></i></button>
                                                 <button type="button" class="btn btn-secondary" onclick="$('#importWrapper').removeClass('d-none'); return false;" title="import data"><i class="fa fa-upload"></i></button>
                                                 <button type="button" class="btn btn-secondary" onclick="deleteData();return false;" title="delete all data"><i class="fa fa-trash"></i></button>
                                             </div>
@@ -470,7 +472,7 @@
                     </div>
                 </div>
 
-                <div id="showBalance" class="jumbotron jumbotron-fluid text-center d-none">
+                <div id="showBalance" class="balanceActionContent jumbotron jumbotron-fluid text-center d-none">
                     <h1 class="display-4">All set.</h1>
                     <p class="lead">Forward and upwards!</p>
                     <hr class="my-4">
