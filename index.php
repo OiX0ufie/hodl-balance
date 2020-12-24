@@ -26,8 +26,41 @@
         <script src="res/cryptoJS/rollups/aes.js"></script>
         <script src="res/cryptoJS/cryptojs-aes-format.js"></script>
         <style>
-            #balanceDisplay {max-width: 1000px; padding: 0 1vw; margin: 4em auto; overflow: hidden;}
-            #balanceDisplay pre {font-size: 2.1vmin; color: #f2f2f2;}
+            #exportWrapper,
+            #importWrapper {
+                position: fixed;
+                top: 5em;
+                left: 10%;
+                width: 80%;
+                height: 65%;
+                padding: 3em;
+                z-index: 900;
+                background: #272D33;
+                border-radius: 5px;
+            }
+            #exportWrapper{
+                padding-bottom: 3.7em;
+            }
+            #exportWrapper textarea,
+            #importWrapper textarea {
+                width: 100%;
+                height: 100%;
+                border: 2px solid #222;
+                background: rgba(0, 0, 0, 0.2);
+                color: #fff;
+                word-wrap:break-word;
+                resize: none;
+            }
+            #balanceDisplay {
+                max-width: 1000px;
+                padding: 0 1vw;
+                margin: 4em auto;
+                overflow: hidden;
+            }
+            #balanceDisplay pre {
+                font-size: 2.1vmin;
+                color: #f2f2f2;
+            }
         </style>
         <script>
 
@@ -169,7 +202,6 @@
                 $('#exportWrapper textarea').val(data);
                 $('#exportWrapper a.downloader').attr('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(data));
                 $('#exportWrapper').removeClass('d-none');
-                window.scrollTo(0, 0);
             }
 
             var importData = function() {
@@ -178,6 +210,7 @@
                     $('#importWrapper textarea').val('');
                     Cookies.set('hodl', data, { expires: 365 });
                     showMessage('data imported', 'Success', 'check');
+                    resetForm();
                 }
                 $('#importWrapper').addClass('d-none');
             }
@@ -289,7 +322,7 @@
         </script>
     </head>
     <bdoy data-theme="dark">
-        <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000" style="position: absolute; width: 35vmin; top: 2em; left: calc(50% - 17vmin); z-index: 9999;">
+        <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000" style="position: fixed; width: 35vmin; top: 2em; left: calc(50% - 17vmin); z-index: 9999;">
             <div class="toast-header">
                 <i style="margin-right: 0.5em;"></i>
                 <strong class="mr-auto"></strong>
@@ -300,7 +333,7 @@
             <div class="toast-body"></div>
         </div>
         <div class="container-xl">
-        <div id="exportWrapper" class="d-none" style="width: 80%; position: absolute; top: 5em; left: 10%; z-index: 900; background: #000; border-radius: 5px; height: 50%;">
+        <div id="exportWrapper" class="d-none">
                 <div style="position: absolute; right: 1em; top: 1em;">
                     <a href="#" onclick="$('#exportWrapper').addClass('d-none'); return false;"><i class="fa fa-times" title="close export"></i></a>
                 </div>
@@ -308,19 +341,19 @@
                     <a href="#" onclick="$('#exportWrapper textarea').select(); document.execCommand('copy'); showMessage('data copied to clipboard', 'Success', 'check'); return false;"><i class="fa fa-copy" title="copy to clipboard"></i></a>
                     <a href="#" class="ml-1 downloader" target="_blank" download="hodl-data.json"><i class="fa fa-download" title="download file"></i></a>
                 </div>
-                <textarea style="border: 2px solid #222; background: none; color: #ccc; word-wrap:break-word; width: 80%; height: 80%; margin: 5% 10%;"></textarea>
+                <textarea></textarea>
             </div>
-            <div id="importWrapper" class="d-none" style="width: 80%; position: absolute; top: 5em; left: 10%; z-index: 900; background: #000; border-radius: 5px; height: 50%;">
+            <div id="importWrapper" class="text-center d-none">
                 <div style="position: absolute; right: 1em; top: 1em;">
                     <a href="#" onclick="$('#importWrapper').addClass('d-none'); return false;"><i class="fa fa-times" title="close import"></i></a>
                 </div>
                 <div style="position: absolute; right: 1em; bottom: 1em;">
                     <a href="#" onclick="importData(); return false;"><i class="fa fa-save" title="import data"></i></a>
                 </div>
-                <textarea style="border: 2px solid #222; background: none; color: #ccc; word-wrap:break-word; width: 80%; height: 80%; margin: 5% 10%;"></textarea>
+                <textarea placeholder="paste your exported json data here and click the save button"></textarea>
             </div>
             <div id="initWrapper" class="actionWrapper d-none">
-                <div class="row mt-5">
+                <div class="row mt-4 mb-2">
                     <div class="col">
                         <h2 class="float-right" style="display: inline-block; font-weight: 300; font-size: 1.5rem; margin-top: 0.9rem;">to the moon <i class="fa fa-rocket"></i></h2>
                         <h1 style="display: inline-block;"><i class="fa fa-coins"></i> Hodl</h1>
@@ -354,8 +387,11 @@
                                             <small class="form-text text-muted">amount of crypto currency</small>
                                         </th>
                                         <th class="align-top text-right">
-                                            <a class="btn btn-secondary" href="?" onclick="$('#importWrapper').removeClass('d-none'); window.scrollTo(0, 0); return false;" role="button" title="import data"><i class="fa fa-upload"></i></a>
-                                            <button type="button" class="btn btn-secondary" onclick="deleteData();return false;" title="delete all data"><i class="fa fa-trash"></i></button>
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-primary" onclick="setAction('balance'); return false;" title="show balance"><i class="fa fa-coins"></i></button>
+                                                <button type="button" class="btn btn-secondary" onclick="$('#importWrapper').removeClass('d-none'); return false;" title="import data"><i class="fa fa-upload"></i></button>
+                                                <button type="button" class="btn btn-secondary" onclick="deleteData();return false;" title="delete all data"><i class="fa fa-trash"></i></button>
+                                            </div>
                                         </th>
                                     </tr>
                                 </thead>

@@ -1,5 +1,10 @@
 <?php
 
+  require_once(__DIR__.'/config.php');
+  if(file_exists(__DIR__.'/config.local.php') && is_readable(__DIR__.'/config.local.php')) {
+    require_once(__DIR__.'/config.local.php');
+  }
+
   if(!isset($_GET['key'])) {
     die('missing encryption key');
   }
@@ -124,4 +129,10 @@
   echo "\nCoingecko API  ".date('j.n.Y H:i');
   $data = ob_get_clean();
 
-  passthru('echo '.escapeshellarg($data).' | lolcat -f | aha -n');
+  $cmd = 'echo '.escapeshellarg($data).' | '.$_CONFIG['balanceCommand'];
+  $output = shell_exec($cmd);
+  if(empty($output)) {
+    die('no response');
+  }
+
+  echo $output;
