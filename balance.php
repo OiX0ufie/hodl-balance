@@ -16,6 +16,8 @@
   if(isset($_COOKIE['hodl'])) {
       require_once(__DIR__.'/CryptoJsAes.php');
       $hodl = $_COOKIE['hodl'];
+      // update cookie lifetime
+      setcookie('hodl', $hodl, strtotime('+1 year'), '/');
       $decrypted = json_decode(CryptoJsAes::decrypt($hodl, $_GET['key']));
       if(!$decrypted) {
         die('configuration error');

@@ -150,6 +150,11 @@
                 $('#cancelButton').addClass('d-none');
             }
 
+            var hidePassword = function() {
+                $('#hodlForm input[name="encryptionKey"]').attr('type', 'password');
+                $('#hodlForm input[name="encryptionKey"]').parent().find('i').removeClass('fa-eye-slash').addClass('fa-eye');
+            }
+
             var togglePassword = function(elem) {
                 var type = $('#hodlForm input[name="encryptionKey"]').attr('type');
                 if('password' == type) {
@@ -184,6 +189,7 @@
                     data.lastUpdate = Date.now();
                     var encodedData = CryptoJS.AES.encrypt(JSON.stringify(data), encryptionKey, { format: CryptoJSAesJson }).toString();
                     Cookies.set('hodl', encodedData, { expires: 365 });
+                    currentEncryptionKey = encryptionKey;
                     showMessage('browser cookie stored', 'Success', 'check');
                 }
                 resetForm();
@@ -206,6 +212,7 @@
 
             var importData = function() {
                 var data = $('#importWrapper textarea').val();
+                console.log(data);
                 if(data.length > 0) {
                     $('#importWrapper textarea').val('');
                     Cookies.set('hodl', data, { expires: 365 });
@@ -231,6 +238,9 @@
                     } catch(e) {
                         if(encryptionKey = prompt('Please enter encryption key')) {
                             return loadCookieData(encryptionKey);
+                        }
+                        else {
+                            showMessage('Refresh page to try again', 'Encryption failed', 'exclamation-triangle');
                         }
                     };
                 }
@@ -302,6 +312,7 @@
             }
 
             var setAction = function(action) {
+                hidePassword();
                 if('undefined' == typeof(action) || !(['balance', 'init'].includes(action))) {
                     if(configOk) {
                         switchContent('balance');
@@ -319,7 +330,6 @@
             var currentEncryptionKey = '';
             var configOk = false;
             $(document).ready(function() {
-                loadCookieData();
                 setAction(window.location.hash.substr(1));
             });
         </script>
