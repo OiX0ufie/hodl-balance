@@ -278,7 +278,10 @@
             var reloadBalance = function() {
                 $('#reloadButton i').addClass('fa-spin');
                 var ajaxUrl = 'balance.php?key=' + currentEncryptionKey;
-                $.ajax(ajaxUrl).done(function(data) {
+                $.ajax({
+                    url: ajaxUrl,
+                    cache: false
+                }).done(function(data) {
                     $('#balanceDisplay').html('<pre>' + data + '</pre>');
                 }).always(function() {
                     $('#reloadButton i').removeClass('fa-spin');
