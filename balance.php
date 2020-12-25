@@ -126,9 +126,36 @@
     echo $symbol.' '.$symbolTotal->amount."\n";
   }
 
-  echo "\n".'LAST UPDATED';
-  echo "\nBalance config ".(is_numeric($lastUpdate) ? date('j.n.Y H:i', $lastUpdate) : 'unknown date');
-  echo "\nCoingecko API  ".date('j.n.Y H:i');
+  echo str_repeat('-', $fullLine)."\n";
+  uasort($prices, function($a, $b) use ($currency) {
+    if ($a[strtolower($currency)] == $b[strtolower($currency)]) {
+      return 0;
+    }
+    return ($a[strtolower($currency)] > $b[strtolower($currency)]) ? -1 : 1;
+  });
+  $lastUpdatedInfo = [
+    'LAST UPDATED',
+    'Balance config '.(is_numeric($lastUpdate) ? date('j.n.Y H:i', $lastUpdate) : 'unknown date'),
+    'Coingecko API  '.date('j.n.Y H:i')
+  ];
+  $cols = $colSizes[0]+$colSizes[1]+$colSizes[2]+$colSizes[3]+3;
+  foreach($prices as $coin=>$price) {
+    $priceLine = str_pad('1 '.strtoupper($coin).' = ', $cols, ' ', STR_PAD_LEFT);
+    $priceLine .= str_pad(number_format($price[strtolower($currency)], 8).' '.$currency, $fullLine-$cols, ' ', STR_PAD_LEFT);
+
+    if($updatedInfo = array_shift($lastUpdatedInfo)) {
+      echo $updatedInfo;
+      echo substr($priceLine, strlen($updatedInfo));
+    }
+    else {
+      echo $priceLine;
+    }
+    echo "\n";
+  }
+  foreach($lastUpdatedInfo as $updatedInfo) {
+    echo $updatedInfo."\n";
+  }
+
   $data = ob_get_clean();
 
   $cmd = 'echo '.escapeshellarg($data).' | '.$_CONFIG['balanceCommand'];
