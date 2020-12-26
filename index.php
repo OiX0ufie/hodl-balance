@@ -372,8 +372,8 @@
                 <div class="row mt-4 mb-2">
                     <div class="col">
                         <div class="float-right" style="display: inline-block; margin-top: 0.42em;">
-                            <button type="button" class="balanceActionContent btn btn-primary mr-2 d-none"onclick="setAction('balance'); return false;" title="show balance"><i class="fa fa-coins"></i></button>
-                            <h2 style="display: inline-block; font-weight: 300; font-size: 1.5rem; position: relative; top: 0.3em;">to the moon <i class="fa fa-rocket"></i></h2>
+                            <h2 style="display: inline-block; font-weight: 300; font-size: 1.5rem; position: relative; top: 0.2em;">to the moon <i class="fa fa-rocket"></i></h2>
+                            <button type="button" class="balanceActionContent btn btn-primary ml-4 d-none"onclick="setAction('balance'); return false;" title="show balance"><i class="fa fa-coins"></i></button>
                         </div>
                         <h1 style="display: inline-block;"><?php echo ($_CONFIG['homeUrl'] ? '<a href="'.$_CONFIG['homeUrl'].'">' : ''); ?><i class="fa fa-coins"></i> Hodl<?php echo ($_CONFIG['homeUrl'] ? '</a>' : ''); ?></h1>
                     </div>
