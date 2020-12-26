@@ -4,7 +4,7 @@
     require_once(__DIR__.'/api.coingecko.php');
     $api = new Api();
     $preferredCurrencies = [
-        'fiat currencies' => ['EUR', 'USD', 'JPY'],
+        'fiat currencies' => ['USD', 'EUR', 'CNY', 'RUB'],
         'crypto currencies' => ['BTC', 'ETH']
     ];
     $supportedCurrencies = $api->getCurrencies();
