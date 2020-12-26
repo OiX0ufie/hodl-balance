@@ -155,7 +155,7 @@
 
   $data = ob_get_clean();
 
-  $cmd = 'echo '.escapeshellarg($data).' | '.$_CONFIG['balanceCommand'];
+  $cmd = 'echo '.escapeshellarg(trim($data)).' | '.$_CONFIG['balanceCommand'];
   $output = shell_exec($cmd);
   if(empty($output)) {
     die('no response');
