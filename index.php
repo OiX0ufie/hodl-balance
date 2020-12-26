@@ -1,5 +1,6 @@
 <?php
     
+    require_once(__DIR__.'/config.php');
     require_once(__DIR__.'/api.coingecko.php');
     $api = new Api();
     $preferredCurrencies = [
@@ -54,7 +55,7 @@
             #balanceDisplay {
                 max-width: 1000px;
                 padding: 0 1vw;
-                margin: 4em auto;
+                margin: 0 auto 2em;
                 overflow: hidden;
             }
             #balanceDisplay pre {
@@ -374,7 +375,7 @@
                             <button type="button" class="balanceActionContent btn btn-primary mr-2 d-none"onclick="setAction('balance'); return false;" title="show balance"><i class="fa fa-coins"></i></button>
                             <h2 style="display: inline-block; font-weight: 300; font-size: 1.5rem; position: relative; top: 0.3em;">to the moon <i class="fa fa-rocket"></i></h2>
                         </div>
-                        <h1 style="display: inline-block;"><i class="fa fa-coins"></i> Hodl</h1>
+                        <h1 style="display: inline-block;"><?php echo ($_CONFIG['homeUrl'] ? '<a href="'.$_CONFIG['homeUrl'].'">' : ''); ?><i class="fa fa-coins"></i> Hodl<?php echo ($_CONFIG['homeUrl'] ? '</a>' : ''); ?></h1>
                     </div>
                 </div>
 
@@ -496,11 +497,16 @@
                 </div>
             </div>
             <div id="balanceWrapper" class="actionWrapper d-none">
-                <div style="position: absolute; left: 1em; top: 1em;">
-                    <a id="reloadButton" href="?" onclick="reloadBalance(); return false;"><i class="fa fa-2x fa-sync"></i></a>
-                </div>
-                <div style="position: absolute; right: 1em; top: 1em;">
-                    <a href="?#init" onclick="setAction('init'); return false;"><i class="fa fa-2x fa-cog"></i></a>
+                <div class="container mt-4">
+                    <div class="float-right">
+                        <a href="?#init" onclick="setAction('init'); return false;"><i class="fa fa-2x fa-cog"></i></a>
+                    </div>
+                    <div>
+                        <?php if($_CONFIG['homeUrl']) : ?>
+                            <a href="<?php echo $_CONFIG['homeUrl']; ?>"><i class="fa fa-2x fa-home mr-4"></i></a>
+                        <?php endif; ?>
+                        <a id="reloadButton" href="?" onclick="reloadBalance(); return false;"><i class="fa fa-2x fa-sync"></i></a>
+                    </div>
                 </div>
                 <div id="balanceDisplay"></div>
             </div>

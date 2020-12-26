@@ -1,9 +1,6 @@
 <?php
 
   require_once(__DIR__.'/config.php');
-  if(file_exists(__DIR__.'/config.local.php') && is_readable(__DIR__.'/config.local.php')) {
-    require_once(__DIR__.'/config.local.php');
-  }
 
   if(!isset($_GET['key'])) {
     die('missing encryption key');
