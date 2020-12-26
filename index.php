@@ -375,7 +375,12 @@
                             <h2 style="display: inline-block; font-weight: 300; font-size: 1.5rem; position: relative; top: 0.2em;">to the moon <i class="fa fa-rocket"></i></h2>
                             <button type="button" class="balanceActionContent btn btn-primary ml-4 d-none"onclick="setAction('balance'); return false;" title="show balance"><i class="fa fa-coins"></i></button>
                         </div>
-                        <h1 style="display: inline-block;"><?php echo ($_CONFIG['homeUrl'] ? '<a href="'.$_CONFIG['homeUrl'].'">' : ''); ?><i class="fa fa-coins"></i> Hodl<?php echo ($_CONFIG['homeUrl'] ? '</a>' : ''); ?></h1>
+                        <h1 style="display: inline-block;">
+                            <i class="fa fa-coins"></i> Hodl
+                            <?php if($_CONFIG['homeUrl']) : ?>
+                                <small><a href="<?php echo $_CONFIG['homeUrl']; ?>" class="ml-4"><i class="fa fa-home"></i></a></small>
+                            <?php endif; ?>
+                        </h1>
                     </div>
                 </div>
 
