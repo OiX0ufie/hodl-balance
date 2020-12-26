@@ -17,7 +17,7 @@
 
 ?><html>
     <head>
-        <title>Hodl init</title>
+        <title>Hodl balance</title>
         <link rel="stylesheet" href="res/fontawesome/css/all.min.css">
         <link rel="stylesheet" href="res/fontawesome/css/brands.min.css">
         <link rel="stylesheet" href="res/bootstrap/css/bootstrap-dark.min.css">
