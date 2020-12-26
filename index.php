@@ -509,6 +509,9 @@
                     </div>
                 </div>
                 <div id="balanceDisplay"></div>
+                <div class="mb-5 text-center">
+                    <small>Data provided by <a href="https://www.coingecko.com/en/api" target="_blank">Coingecko API</a></small>
+                </div>
             </div>
         </div>
     </body>
