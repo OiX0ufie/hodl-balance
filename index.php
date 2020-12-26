@@ -55,7 +55,7 @@
             #balanceDisplay {
                 max-width: 1000px;
                 padding: 0 1vw;
-                margin: 0 auto 2em;
+                margin: 0 auto;
                 overflow: hidden;
             }
             #balanceDisplay pre {
@@ -497,7 +497,7 @@
                 </div>
             </div>
             <div id="balanceWrapper" class="actionWrapper d-none">
-                <div class="container mt-4">
+                <div class="container mt-3 mb-4">
                     <div class="float-right">
                         <a href="?#init" onclick="setAction('init'); return false;"><i class="fa fa-2x fa-cog"></i></a>
                     </div>
@@ -509,7 +509,7 @@
                     </div>
                 </div>
                 <div id="balanceDisplay"></div>
-                <div class="mb-5 text-center">
+                <div class="mb-3 text-center">
                     <small>Data provided by <a href="https://www.coingecko.com/en/api" target="_blank">Coingecko API</a></small>
                 </div>
             </div>
