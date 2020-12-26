@@ -507,10 +507,10 @@
                         <a href="?#init" onclick="setAction('init'); return false;"><i class="fa fa-2x fa-cog"></i></a>
                     </div>
                     <div>
-                        <?php if($_CONFIG['homeUrl']) : ?>
-                            <a href="<?php echo $_CONFIG['homeUrl']; ?>"><i class="fa fa-2x fa-home mr-4"></i></a>
-                        <?php endif; ?>
                         <a id="reloadButton" href="?" onclick="reloadBalance(); return false;"><i class="fa fa-2x fa-sync"></i></a>
+                        <?php if($_CONFIG['homeUrl']) : ?>
+                            <a href="<?php echo $_CONFIG['homeUrl']; ?>"><i class="fa fa-2x fa-home ml-4"></i></a>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div id="balanceDisplay"></div>
