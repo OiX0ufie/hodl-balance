@@ -5,6 +5,8 @@
         'balanceCommand' => 'lolcat -f | aha -n',    // customize lolcat/aha pipe. See balance.php "echo $balanceData | $CONFIG['balanceCommand']"
     ];
 
+    date_default_timezone_set('UTC');
+
     // load optional custom config file (to overwrite project default config)
     if(file_exists(__DIR__.'/config.local.php') && is_readable(__DIR__.'/config.local.php')) {
         require_once(__DIR__.'/config.local.php');

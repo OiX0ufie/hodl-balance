@@ -130,10 +130,11 @@
     }
     return ($a[strtolower($currency)] > $b[strtolower($currency)]) ? -1 : 1;
   });
+  
   $lastUpdatedInfo = [
     'LAST UPDATED',
-    'Balance config '.(is_numeric($lastUpdate) ? date('j.n.Y H:i', $lastUpdate) : 'unknown date'),
-    'Coingecko API  '.date('j.n.Y H:i')
+    'Balance config '.(is_numeric($lastUpdate) ? date('j.n.Y H:i', $lastUpdate) : 'unknown date').' '.date_default_timezone_get(),
+    'Coingecko API  '.date('j.n.Y H:i').' '.date_default_timezone_get()
   ];
   $cols = $colSizes[0]+$colSizes[1]+$colSizes[2]+$colSizes[3]+3;
   foreach($prices as $coin=>$price) {

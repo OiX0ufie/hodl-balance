@@ -7,8 +7,6 @@
             $apiUrl = $this->apiBase.$apiCall;
             $cacheFile = __DIR__ . '/cache/'.md5($apiUrl).'.cache';
         
-            $currentTZ = date_default_timezone_get();
-            date_default_timezone_set('Europe/Vienna');
             ob_start();
             if(!is_writable(dirname($cacheFile))) {
               return 'Error: cannot write cache';
