@@ -515,7 +515,8 @@
                 </div>
                 <div id="balanceDisplay"></div>
                 <div class="mb-3 text-center">
-                    <small>Data provided by <a href="https://www.coingecko.com/en/api" target="_blank">Coingecko API</a></small>
+                    <small class="mr-5">Data provided by <a href="https://www.coingecko.com/en/api" target="_blank">Coingecko API</a></small>
+                    <small class="ml-5">GitHub <a href="https://github.com/OiX0ufie/hodl-balance" target="_blank">@OiX0ufie/hodl-balance</a></small>
                 </div>
             </div>
         </div>
