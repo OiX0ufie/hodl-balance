@@ -154,7 +154,7 @@
     echo $updatedInfo."\n";
   }
 
-  $data = ob_get_clean();
+   $data = ob_get_clean();
 
   $cmd = 'echo '.escapeshellarg(trim($data)).' | '.$_CONFIG['balanceCommand'];
   $output = shell_exec($cmd);
@@ -163,3 +163,22 @@
   }
 
   echo $output;
+  if($coins = $api->getCoins()) {
+    echo 'Charts: ';
+    foreach($prices as $symbol=>$price) {
+      foreach($coins as $coin) {
+        if($coin->symbol == strtolower($symbol)) {
+          echo '<a href="https://www.coingecko.com/en/coins/'.$coin->id.'/'.strtolower($currency).'" target="_blank">'.strtoupper($symbol).'</a> ';
+          break;
+        }
+      }
+    }
+    echo '<br><br>';
+    // if($data = $this->call($apiCall)) {
+    //   foreach($data as $item) {
+    //       if($symbol == $item->symbol) {
+    //           return $item;
+    //       }
+    //   }
+    // }
+  }

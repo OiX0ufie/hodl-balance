@@ -108,6 +108,11 @@
             return $symbols;
         }
 
+        public function getCoins() {
+            $apiCall = '/coins/list';
+            return $this->call($apiCall);
+        }
+
         public function listCoins() {
             $apiCall = '/coins/list';
             $data = $this->call($apiCall);
