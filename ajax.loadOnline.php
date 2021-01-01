@@ -12,10 +12,10 @@
             if ($result = $mysqli->query($sql)) {
                 while ($row = $result->fetch_assoc()) {
                     echo json_encode($row['data']);
+                    mysqli_free_result($result);
+                    $mysqli -> close();
+                    die();
                 }
-                mysqli_free_result($result);
-                $mysqli -> close();
-                die();
             }
         }
     }
