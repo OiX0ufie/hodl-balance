@@ -306,7 +306,11 @@
                 }
                 else if('init' == action) {
                     if(configOk) {
+                        $('#noInit').addClass('d-none');
                         resetForm();
+                    }
+                    else {
+                        $('#noInit').removeClass('d-none');
                     }
                     $('.actionWrapper').addClass('d-none');
                     $('#initWrapper').removeClass('d-none');
@@ -382,6 +386,12 @@
                             <?php endif; ?>
                         </h1>
                     </div>
+                </div>
+
+                <div id="noInit" class="jumbotron jumbotron-fluid text-center">
+                    <h1 class="display-4">What is hodl balance?</h1>
+                    <p class="lead">A simple online app that let's you keep track of your crypto holdings in any currency.</p>
+                    <p>All information is stored AES encrypted as browser cookie. All price information is fetched from Coingecko API.</p>
                 </div>
 
                 <div class="row">
