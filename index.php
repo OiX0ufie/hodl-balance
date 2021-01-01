@@ -141,6 +141,10 @@
                     $('#saveButton').removeClass('btn-secondary');
                     $('#saveButton').addClass('btn-primary');
                     $('#cancelButton').removeClass('d-none');
+                    $('#onlineStore').css('display', 'none');
+                }
+                else {
+                    $('#onlineStore').css('display', 'table-row');
                 }
             }
 
@@ -296,6 +300,71 @@
                 }).always(function() {
                     $('#reloadButton i').removeClass('fa-spin');
                 });
+            }
+
+            var checkOnlineKey = function(onlineKey) {
+                if(onlineKey.length >= <?php echo $_CONFIG['onlineKeyLength']; ?>) {
+                    return true;
+                }
+                else {
+                    showMessage('Online key has to be at least <?php echo $_CONFIG['onlineKeyLength']; ?> characters', 'Online key invalid', 'key');
+                }
+                return false;
+            }
+
+            var saveOnline = function() {
+                var onlineKey = $('#hodlForm input[name="onlineKey"]').val();
+                if(checkOnlineKey(onlineKey)) {
+                    var data = Cookies.get('hodl');
+                    if('undefined' != typeof(data)) {
+                        var ajaxUrl = 'ajax.saveOnline.php';
+                        $.ajax({
+                            url: ajaxUrl,
+                            cache: false,
+                            type: 'POST',
+                            data: { key: onlineKey, data: data }
+                        }).done(function(data) {
+                            if('true' == data) {
+                                showMessage('Data saved on server', 'Success', 'check');
+                            }
+                            else {
+                                showMessage('Data was not saved on server', 'Error', 'exclamation-triangle');
+                            }
+                        });
+                    }
+                }
+            }
+
+            var loadOnline = function() {
+                var onlineKey = $('#hodlForm input[name="onlineKey"]').val();
+                if(checkOnlineKey(onlineKey)) {
+                    var ajaxUrl = 'ajax.loadOnline.php';
+                    $.ajax({
+                        url: ajaxUrl,
+                        cache: false,
+                        type: 'POST',
+                        data: { key: onlineKey }
+                    }).done(function(data) {
+                        if('false' == data) {
+                            showMessage('Could not load data', 'Error', 'exclamation-triangle');
+                        }
+                        else {
+                            try {
+                                onlineData = JSON.parse(data);
+                                // try decrypting with empty key
+                                var decryptedData = CryptoJS.AES.decrypt(onlineData, currentEncryptionKey, { format: CryptoJSAesJson }).toString(CryptoJS.enc.Utf8);
+                                var data = JSON.parse(decryptedData);
+                                Cookies.set('hodl', onlineData, { expires: 365 });
+                                loadCookieData(currentEncryptionKey);
+                                setAction('balance');
+                                showMessage('Data loaded from server', 'Success', 'check');
+                                return true;
+                            } catch(e) {
+                                showMessage('An unknown problem occured', 'Encryption failed', 'exclamation-triangle');
+                            };
+                        }
+                    });
+                }
             }
 
             var switchContent = function(action) {
@@ -490,8 +559,25 @@
                                             </label>
                                         </td>
                                         <td colspan="2" class="text-right align-bottom">
-                                            <button type="submit" id="saveButton" class="btn btn-secondary" onclick="saveFormData(); return false;" title="save form data">save data <i class="fa fa-save"></i></button>
+                                            <button type="submit" id="saveButton" class="btn btn-secondary" onclick="saveFormData(); return false;" title="save form data">update data <i class="fa fa-cookie"></i></button>
                                             <button type="reset" id="cancelButton" class="btn btn-secondary d-none" onclick="resetForm(); return false;" title="reset form data">cancel <i class="fa fa-ban"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr id="onlineStore" style="display: none;">
+                                        <td colspan="3">
+                                            <label>
+                                                <p>
+                                                    <i class="fa fa-cloud"></i> Online key <small>(optional)</small>
+                                                    <small class="form-text text-muted">Store your data online at 0x2o.com. Makes using the service on multiple devices easier. Select any string with <?php echo $_CONFIG['onlineKeyLength']; ?> or more characters.</small>
+                                                </p>
+                                                <div class="input-group">
+                                                    <input class="form-control" type="text" name="onlineKey">
+                                                </div>
+                                            </label>
+                                        </td>
+                                        <td colspan="3" class="align-middle">
+                                            <button type="button" class="btn btn-secondary" onclick="saveOnline(); return false;" title="save data">persist online <i class="fa fa-cloud-upload-alt"></i></button>
+                                            <button type="button" class="btn btn-secondary" onclick="loadOnline(); return false;" title="load data">load <i class="fa fa-cloud-download-alt"></i></button>
                                         </td>
                                     </tr>
                                 </tfoot>

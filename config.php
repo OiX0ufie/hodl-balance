@@ -1,8 +1,16 @@
 <?php
 
     $_CONFIG = [
+        'onlineKeyLength' => 24, // minimum length of online key
         'homeUrl' => false, // optional: link to parent page; default: disabled
         'balanceCommand' => 'lolcat -f | aha -n',    // customize lolcat/aha pipe. See balance.php "echo $balanceData | $CONFIG['balanceCommand']"
+        'database' => [
+            'name' => 'hodl-balance',
+            'username' => 'hodl-balance',
+            'password' => '',
+            'host' => 'localhost',
+            'port' => 3306,
+        ],
     ];
 
     date_default_timezone_set('UTC');
