@@ -411,7 +411,7 @@
         </script>
     </head>
     <bdoy data-theme="dark">
-        <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000" style="position: fixed; width: 35vmin; top: 2em; left: calc(50% - 17vmin); z-index: 9999;">
+        <div id="toast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000" style="position: fixed; width: 35vmin; top: 2em; left: calc(50% - 17vmin); z-index: 9999; display:">
             <div class="toast-header">
                 <i style="margin-right: 0.5em;"></i>
                 <strong class="mr-auto"></strong>
@@ -448,7 +448,7 @@
                             <h2 style="display: inline-block; font-weight: 300; font-size: 1.5rem; position: relative; top: 0.2em;">to the moon <i class="fa fa-rocket"></i></h2>
                             <button type="button" class="balanceActionContent btn btn-primary ml-4 d-none"onclick="setAction('balance'); return false;" title="show balance"><i class="fa fa-coins"></i></button>
                         </div>
-                        <h1 style="display: inline-block;">
+                        <h1 class="d-inline-block">
                             <i class="fa fa-coins"></i> Hodl
                             <?php if($_CONFIG['homeUrl']) : ?>
                                 <small><a href="<?php echo $_CONFIG['homeUrl']; ?>" class="ml-4"><i class="fa fa-home"></i></a></small>
@@ -602,11 +602,18 @@
                     <div class="float-right">
                         <a href="?#init" onclick="setAction('init'); return false;"><i class="fa fa-2x fa-cog"></i></a>
                     </div>
-                    <div>
+                    <div class="float-left">
                         <a id="reloadButton" href="?" onclick="reloadBalance(); return false;"><i class="fa fa-2x fa-sync"></i></a>
                         <?php if($_CONFIG['homeUrl']) : ?>
                             <a href="<?php echo $_CONFIG['homeUrl']; ?>"><i class="fa fa-2x fa-home ml-4"></i></a>
                         <?php endif; ?>
+                    </div>
+                    <div class="text-center">
+                            <?php if($_CONFIG['topCenterMarkup']) : ?>
+                                <?php echo $_CONFIG['topCenterMarkup']; ?>
+                            <?php else : ?>
+                                &nbsp;
+                            <?php endif; ?>
                     </div>
                 </div>
                 <div id="balanceDisplay"></div>

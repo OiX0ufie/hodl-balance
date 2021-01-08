@@ -3,6 +3,7 @@
     $_CONFIG = [
         'onlineKeyLength' => 24, // minimum length of online key
         'homeUrl' => false, // optional: link to parent page; default: disabled
+        'topCenterMarkup' => false,    // inject markup in the top center portion (e.g. additional link to external webpage)
         'balanceCommand' => 'lolcat -f | aha -n',    // customize lolcat/aha pipe. See balance.php "echo $balanceData | $CONFIG['balanceCommand']"
         'database' => [
             'name' => 'hodl-balance',
