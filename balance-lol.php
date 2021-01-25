@@ -188,7 +188,7 @@
           }
         }
       }
-      echo '<br><br>';
+      echo "\n\n";
       // if($data = $this->call($apiCall)) {
       //   foreach($data as $item) {
       //       if($symbol == $item->symbol) {
