@@ -146,25 +146,12 @@
                     $chartValues[$coin] = $coinTotal->total;
                   }
                 ?>
-                <canvas id="pieChart" style="width: 100%; height: 95%; margin-top: 1%"></canvas>
+                <canvas id="pieChart" style="width: 100%; height: 95%; margin-top: 1%;"></canvas>
                 <script>
-                var getRandom = function(min, max) {
-                  var min = Math.ceil(min);
-                  var max = Math.floor(max);
-                  return Math.floor(Math.random() * (max - min + 1) + min);
-                }
-                var getRandomRgb = function() {
-                    color = getRandom(0, 255) + ', ' + getRandom(0, 255) + ', ' + getRandom(0, 255);
-                    return color;
-                }
-                var backgroundColors = [];
                 var borderColors = [];
                 for(i = 0; i < <?php echo sizeof($totals); ?>; i++) {
-                  var rgb = getRandomRgb();
-                  backgroundColors[i] = 'rgba(' + rgb + ', 0.25)';
-                  borderColors[i] = 'rgba(' + rgb + ', 1)';
+                  borderColors[i] = '#191d21';
                 }
-                console.log(backgroundColors);
                 var ctx = document.getElementById('pieChart').getContext('2d');
                 var pieChart = new Chart(ctx, {
                     type: 'doughnut',
@@ -172,7 +159,6 @@
                         labels: [<?php echo "'".implode("', '", array_keys($chartValues))."'"; ?>],
                         datasets: [{
                             data: [<?php echo "'".implode("', '", $chartValues)."'"; ?>],
-                            backgroundColor: backgroundColors,
                             borderColor: borderColors,
                             borderWidth: 1
                         }],
@@ -180,6 +166,11 @@
                     options: {
                       legend: {
                         position: 'right'
+                      },
+                      plugins: {
+                        colorschemes: {
+                          scheme: 'office.Studio6' //office.Atlas6'
+                        }
                       }
                     }
                 });
