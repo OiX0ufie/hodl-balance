@@ -174,6 +174,7 @@
 
   echo '<pre>';
     echo $output;
+    echo "\n";
     if($coins = $api->getCoins()) {
       echo 'Charts: ';
       foreach($prices as $symbol=>$price) {
