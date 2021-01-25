@@ -26,6 +26,7 @@
         <script src="res/bootstrap/js/bootstrap.min.js"></script>
         <script src="res/cryptoJS/rollups/aes.js"></script>
         <script src="res/cryptoJS/cryptojs-aes-format.js"></script>
+        <script src="res/chartJs/Chart.min.js"></script>
         <style>
             #exportWrapper,
             #importWrapper {
@@ -300,7 +301,7 @@
                     url: ajaxUrl,
                     cache: false
                 }).done(function(data) {
-                    $('#balanceDisplay').html('<pre>' + data + '</pre>');
+                    $('#balanceDisplay').html(data);
                 }).always(function() {
                     $('#reloadButton i').removeClass('fa-spin');
                 });

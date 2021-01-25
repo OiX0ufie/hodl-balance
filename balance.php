@@ -34,6 +34,9 @@
       $currency = strtoupper($json->currency);
     }
   }
+  $locale='en-US';
+  $fmt = new NumberFormatter( $locale."@currency=$currency", NumberFormatter::CURRENCY );
+  $currencyLabel = $fmt->getSymbol(NumberFormatter::CURRENCY_SYMBOL);
 
   // check lastupdate date
   $lastUpdate = false;
@@ -71,66 +74,122 @@
 
   ob_start();
 
-  echo '<h5 class="mt-3" style="margin: 0.5rem 0.25rem 0.65rem;">Balance</h5>';
-  echo '<table class="table table-borderless table-sm">';
-    echo '<thead><tr style="border-top: 1px solid #333; border-bottom: 1px solid #333;">';
-      echo '<th>Platform</th>';
-      echo '<th>Wallet</th>';
-      echo '<th>Account</th>';
-      echo '<th class="text-right">'.$currency.'</th>';
-      echo '<th>Amount</th>';
-    echo '</tr></thead>';
+  $total = 0;
+  $totals = [];
 
-    $total = 0;
-    $totals = [];
+  foreach($accounts as $index=>$account) {
+    if(!isset($totals[$account->symbol])) {
+      $totals[$account->symbol] = (object)[
+        'amount' => 0,
+        'total' => 0,
+      ];
+    }
+    $price = $prices[strtolower($account->symbol)][strtolower($currency)];
+    if(is_numeric($price)) {
+      $value = round($price*$account->amount, 2);
+      $total += $value;
+      $totals[$account->symbol]->amount += $account->amount;
+      $totals[$account->symbol]->total += $value;
+    }
+    else {
+      $value = $price;
+    }
+    $accounts[$index]->value = $value;
+  }
+
+  echo '<table class="table table-borderless table-sm mt-2">';
+    echo '<thead>';
+      echo '<tr>';
+        echo '<th colspan="3"><h5 class="mb-0">Balance</h5></th>';
+        echo '<th class="text-right">'.number_format($total, 2).' '.$currencyLabel.'</th>';
+        echo '<th>total</th>';
+      echo '</tr>';
+      echo '<tr style="border-top: 1px solid #333; border-bottom: 1px solid #333;">';
+        echo '<th>Platform</th>';
+        echo '<th>Wallet</th>';
+        echo '<th colspan="3">Account</th>';
+      echo '</tr>';
+    echo '</thead>';
     echo '<tbody style="border-bottom: 1px solid #333;">';
       foreach($accounts as $account) {
-        if(!isset($totals[$account->symbol])) {
-          $totals[$account->symbol] = (object)[
-            'amount' => 0,
-            'total' => 0,
-          ];
-        }
         echo '<tr>';
           echo '<td>'.$account->platform.'</td>';
           echo '<td>'.$account->wallet.'</td>';
           echo '<td>'.$account->account.'</td>';
-          $price = $prices[strtolower($account->symbol)][strtolower($currency)];
-          if(is_numeric($price)) {
-            $value = round($price*$account->amount, 2);
-            $total += $value;
-            $totals[$account->symbol]->amount += $account->amount;
-            $totals[$account->symbol]->total += $value;
-          }
-          else {
-            $value = $price;
-          }
-          echo '<td class="text-right">'.number_format($value, 2).'</td>';
+          echo '<td class="text-right">'.number_format($account->value, 2).' '.$currencyLabel.'</td>';
           echo '<td>'.$assets[$account->symbol].' '.$account->symbol.' '.$account->amount.'</td>';
         echo '</tr>';
       }
-      // show total
-      echo '<tr style="border-top: 1px solid #333;">';
-        echo '<th colspan="2"></th>';
-        echo '<th class="text-right" colspan="2">'.$currency.' '.number_format($total, 2).'</th>';
-        echo '<th>total </th>';
-      echo '</tr>';
 
       // show symbol stats
-      echo '<tr style="border-bottom: 1px solid #333;"><th colspan="5"><h5 class="mt-3">Distribution</h5></th></tr>';
+      echo '<tr style="border-top: 1px solid #333; border-bottom: 1px solid #333;">';
+        echo '<th colspan="5"><h5 class="mb-0 mt-3">Distribution</h5></th>';
+      echo '</tr>';
       uasort($totals, function($a, $b){
         if ($a->total == $b->total) {
           return 0;
         }
         return ($a->total > $b->total) ? -1 : 1;
       });
+      $iteration = 0;
       foreach($totals as $symbol=>$symbolTotal) {
-        $percentage = $symbolTotal->total/$total*100;
+        $iteration++;
+        $percentage = $symbolTotal->total / $total * 100;
         echo '<tr>';
-          echo '<td colspan="3" class="text-right" style="position: relative;">';
-            echo '<div style="position: absolute; left: 0.75rem; top: 0.42rem; height: 0.7em; background: rgba(255, 255, 255, 0.75); width: '.round($percentage/100*70, 2).'%;"></div>';
-            echo round($percentage, 1).'% </td>';
-          echo '<td class="text-right">'.number_format($symbolTotal->total, 2).'</td>';
+          if(1 == $iteration) {
+            echo '<td colspan="2" rowspan="'.sizeof($totals).'" style="position: relative;">';
+              echo '<div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;">';
+              if(sizeof($totals) > 0) : ?>
+                <?php
+                  $chartValues = [];
+                  foreach($totals as $coin=>$coinTotal) {
+                    $chartValues[$coin] = $coinTotal->total;
+                  }
+                ?>
+                <canvas id="pieChart" style="width: 100%; height: 95%; margin-top: 1%"></canvas>
+                <script>
+                var getRandom = function(min, max) {
+                  var min = Math.ceil(min);
+                  var max = Math.floor(max);
+                  return Math.floor(Math.random() * (max - min + 1) + min);
+                }
+                var getRandomRgb = function() {
+                    color = getRandom(0, 255) + ', ' + getRandom(0, 255) + ', ' + getRandom(0, 255);
+                    return color;
+                }
+                var backgroundColors = [];
+                var borderColors = [];
+                for(i = 0; i < <?php echo sizeof($totals); ?>; i++) {
+                  var rgb = getRandomRgb();
+                  backgroundColors[i] = 'rgba(' + rgb + ', 0.25)';
+                  borderColors[i] = 'rgba(' + rgb + ', 1)';
+                }
+                console.log(backgroundColors);
+                var ctx = document.getElementById('pieChart').getContext('2d');
+                var pieChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [<?php echo "'".implode("', '", array_keys($chartValues))."'"; ?>],
+                        datasets: [{
+                            data: [<?php echo "'".implode("', '", $chartValues)."'"; ?>],
+                            backgroundColor: backgroundColors,
+                            borderColor: borderColors,
+                            borderWidth: 1
+                        }],
+                    },
+                    options: {
+                      legend: {
+                        position: 'right'
+                      }
+                    }
+                });
+                </script>
+              <?php endif;
+              echo '</div>';
+            echo '</td>';
+          }
+          echo '<td class="text-right">'.round($percentage, 2).' %</td>';
+          echo '<td class="text-right">'.number_format($symbolTotal->total, 2).' '.$currencyLabel.'</td>';
           echo '<td>'.$assets[$symbol].' '.$symbol.' '.$symbolTotal->amount.'</td>';
         echo '</tr>';
       }
@@ -154,7 +213,6 @@
           return ($a[strtolower($currency)] > $b[strtolower($currency)]) ? -1 : 1;
         });
         echo '<table class="table table-sm table-borderless" style="width: auto;">';
-          echo '<tr><th colspan="3">Coin</th><th class="text-right">'.$currency.'</th>';
           foreach($prices as $coin=>$price) {
             echo '<tr>';
               echo '<td class="text-right">1 '.$assets[strtoupper($coin)].' '.strtoupper($coin).'</td>';
@@ -164,7 +222,7 @@
                 }
               echo '</td>';
               echo '<td> = </td>';
-              echo '<td class="text-right">'.number_format($price[strtolower($currency)], 8).'</td>';
+              echo '<td class="text-right">'.number_format($price[strtolower($currency)], 8).' '.$currencyLabel.'</td>';
             echo '</tr>';
           }
         echo '</table>';
