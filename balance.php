@@ -117,7 +117,7 @@
       echo '</tr>';
 
       // show symbol stats
-      echo '<tr style="border-bottom: 1px solid #333;"><th colspan="5"><h5 class="mt-3">Crypto distribution</h5></th></tr>';
+      echo '<tr style="border-bottom: 1px solid #333;"><th colspan="5"><h5 class="mt-3">Distribution</h5></th></tr>';
       uasort($totals, function($a, $b){
         if ($a->total == $b->total) {
           return 0;
