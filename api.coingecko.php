@@ -108,8 +108,26 @@
             return $symbols;
         }
 
-        public function getCoin($coin) {
-            $apiCall = '/coins/'.$coin;
+        // thumb, small, large
+        public function getCoinImage($symbol, $size = 'thumb') {
+            if($id = $this->getIdFromSymbol($symbol)) {
+                if($coin = $this->getCoin($id->id)) {
+                    if('large' == $size) {
+                        return $coin->image->large;
+                    }
+                    else if('small' == $size) {
+                        return $coin->image->small;
+                    }
+                    else {
+                        return $coin->image->thumb;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public function getCoin($symbol) {
+            $apiCall = '/coins/'.$symbol;
             $cacheDuration = 60*60*12;  // 12 hours
             return $this->call($apiCall, $cacheDuration);
         }
