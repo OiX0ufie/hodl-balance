@@ -57,6 +57,16 @@
   // print_r($prices);
   // die();
 
+  $assets = [];
+  foreach($symbols as $symbol) {
+    if($id = $api->getIdFromSymbol($symbol)) {
+      $id = $id->id;
+      if($coin = $api->getCoin($id)) {
+        $assets[$symbol] = $coin->image->thumb;
+      }
+    }
+  }
+
   $colSizes = [9, 15, 18, 10];
   $fullLine = 75;
 
@@ -168,7 +178,11 @@
     foreach($prices as $symbol=>$price) {
       foreach($coins as $coin) {
         if($coin->symbol == strtolower($symbol)) {
-          echo '<a href="https://www.coingecko.com/en/coins/'.$coin->id.'/'.strtolower($currency).'" target="_blank">'.strtoupper($symbol).'</a> ';
+          $image = '';
+          if(isset($assets[strtoupper($symbol)])) {
+            $image = '<img src="'.$assets[strtoupper($symbol)].'">';
+          }
+          echo '<a href="https://www.coingecko.com/en/coins/'.$coin->id.'/'.strtolower($currency).'" target="_blank">'.$image.strtoupper($symbol).'</a> ';
           break;
         }
       }

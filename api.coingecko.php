@@ -12,7 +12,7 @@
               return 'Error: cannot write cache';
             }
             else {
-              if(file_exists($cacheFile) && filemtime($cacheFile)+$cacheDuration > mktime()) {
+              if(file_exists($cacheFile) && filemtime($cacheFile)+$cacheDuration > time()) {
                 $data = file_get_contents($cacheFile);
               }   
               else {
@@ -106,6 +106,12 @@
                 }
             }
             return $symbols;
+        }
+
+        public function getCoin($coin) {
+            $apiCall = '/coins/'.$coin;
+            $cacheDuration = 60*60*12;  // 12 hours
+            return $this->call($apiCall, $cacheDuration);
         }
 
         public function getCoins() {
