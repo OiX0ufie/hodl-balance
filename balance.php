@@ -101,7 +101,7 @@
     echo '<thead>';
       echo '<tr>';
         echo '<th colspan="3"><h5 class="mb-0">Balance</h5></th>';
-        echo '<th class="text-right">'.number_format($total, 2).' '.$currencyLabel.'</th>';
+        echo '<th class="text-right text-bigger">'.number_format($total, 2).' '.$currencyLabel.'</th>';
         echo '<th>total</th>';
       echo '</tr>';
       echo '<tr style="border-top: 1px solid #333; border-bottom: 1px solid #333;">';
@@ -116,7 +116,7 @@
           echo '<td>'.$account->platform.'</td>';
           echo '<td>'.$account->wallet.'</td>';
           echo '<td>'.$account->account.'</td>';
-          echo '<td class="text-right">'.number_format($account->value, 2).' '.$currencyLabel.'</td>';
+          echo '<td class="text-right text-bigger">'.number_format($account->value, 2).' '.$currencyLabel.'</td>';
           echo '<td>'.$assets[$account->symbol].' '.$account->symbol.' '.$account->amount.'</td>';
         echo '</tr>';
       }
@@ -146,7 +146,7 @@
                     $chartValues[$coin] = $coinTotal->total;
                   }
                 ?>
-                <canvas id="pieChart" style="width: 100%; height: 95%; margin-top: 1%;"></canvas>
+                <canvas id="pieChart" style="width: 100%; height: 95%; margin-top: 0.5em;"></canvas>
                 <script>
                 var borderColors = [];
                 for(i = 0; i < <?php echo sizeof($totals); ?>; i++) {
@@ -180,7 +180,7 @@
             echo '</td>';
           }
           echo '<td class="text-right">'.round($percentage, 2).' %</td>';
-          echo '<td class="text-right">'.number_format($symbolTotal->total, 2).' '.$currencyLabel.'</td>';
+          echo '<td class="text-right text-bigger">'.number_format($symbolTotal->total, 2).' '.$currencyLabel.'</td>';
           echo '<td>'.$assets[$symbol].' '.$symbol.' '.$symbolTotal->amount.'</td>';
         echo '</tr>';
       }
@@ -213,7 +213,7 @@
                 }
               echo '</td>';
               echo '<td> = </td>';
-              echo '<td class="text-right">'.number_format($price[strtolower($currency)], 8).' '.$currencyLabel.'</td>';
+              echo '<td class="text-right text-bigger">'.number_format($price[strtolower($currency)], 8).' '.$currencyLabel.'</td>';
             echo '</tr>';
           }
         echo '</table>';

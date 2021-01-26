@@ -18,6 +18,7 @@
 ?><html>
     <head>
         <title>Hodl balance</title>
+        <meta name="viewport" content="width=device-width, initial-scale=0.5, user-scalable=yes">
         <link rel="stylesheet" href="res/fontawesome/css/all.min.css">
         <link rel="stylesheet" href="res/fontawesome/css/brands.min.css">
         <link rel="stylesheet" href="res/bootstrap/css/bootstrap-dark.min.css">
@@ -63,6 +64,9 @@
             #balanceDisplay pre {
                 font-size: 2.1vmin;
                 color: #f2f2f2;
+            }
+            .text-bigger {
+                font-size: 1.3em;
             }
         </style>
         <script>
