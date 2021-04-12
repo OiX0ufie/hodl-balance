@@ -2,6 +2,16 @@
 
   require_once(__DIR__.'/config.php');
 
+  function number_format_nice($num, $decimals = 0, $decimalSeparator = '.', $thousandsSeparator = ',') {
+    $numberString = number_format($num, $decimals, $decimalSeparator, $thousandsSeparator);
+    if(strpos($numberString, $decimalSeparator) !== false) {
+      $numberString = rtrim(rtrim($numberString, '0'), '.');
+    }
+    return $numberString;
+  }
+
+  $now = time();
+
   if(!isset($_GET['key'])) {
     die('missing encryption key');
   }
@@ -117,7 +127,7 @@
           echo '<td>'.$account->wallet.'</td>';
           echo '<td>'.$account->account.'</td>';
           echo '<td class="text-right text-bigger">'.number_format($account->value, 2).' '.$currencyLabel.'</td>';
-          echo '<td>'.$assets[$account->symbol].' '.$account->symbol.' '.$account->amount.'</td>';
+          echo '<td>'.$assets[$account->symbol].' '.$account->symbol.' <span class="text-secondary">'.$account->amount.'</span></td>';
         echo '</tr>';
       }
 
@@ -179,22 +189,18 @@
               echo '</div>';
             echo '</td>';
           }
-          echo '<td class="text-right">'.round($percentage, 2).' %</td>';
+          echo '<td class="text-right text-info">'.round($percentage, 1).' %</td>';
           echo '<td class="text-right text-bigger">'.number_format($symbolTotal->total, 2).' '.$currencyLabel.'</td>';
-          echo '<td>'.$assets[$symbol].' '.$symbol.' '.$symbolTotal->amount.'</td>';
+          echo '<td>'.$assets[$symbol].' '.$symbol.' <span class="text-secondary">'.$symbolTotal->amount.'</span></td>';
         echo '</tr>';
       }
     echo '</tbody>';
   echo '</table>';
 
 
-  echo '<div class="container mt-5">';
-    echo '<div class="row">';
-      echo '<div class="col">';
-        echo '<p>Last updated</p>';
-        echo '<p><small>Balance config '.(is_numeric($lastUpdate) ? date('j.n.Y H:i', $lastUpdate) : 'unknown date').' '.date_default_timezone_get().'</small><br>';
-        echo '<small>Coingecko API  '.date('j.n.Y H:i').' '.date_default_timezone_get().'</small></p>';
-      echo '</div>';
+  echo '<div class="container mt-3">';
+    echo '<h5 class="">Market data</h5>';
+    echo '<div class="row" style="border-top: 1px solid #333; border-bottom: 1px solid #333;">';
       echo '<div class="col">';
         // print general price info
         uasort($prices, function($a, $b) use ($currency) {
@@ -203,22 +209,264 @@
           }
           return ($a[strtolower($currency)] > $b[strtolower($currency)]) ? -1 : 1;
         });
-        echo '<table class="table table-sm table-borderless" style="width: auto;">';
-          foreach($prices as $coin=>$price) {
-            echo '<tr>';
-              echo '<td class="text-right">1 '.$assets[strtoupper($coin)].' '.strtoupper($coin).'</td>';
-              echo '<td>';
-                if($id = $api->getIdFromSymbol($coin)) {
-                  echo '<a href="https://www.coingecko.com/en/coins/'.$id->id.'/'.strtolower($currency).'" target="_blank"><i class="fa fa-chart-bar"></i></a>';
-                }
-              echo '</td>';
-              echo '<td> = </td>';
-              echo '<td class="text-right text-bigger">'.number_format($price[strtolower($currency)], 8).' '.$currencyLabel.'</td>';
+        echo '<table class="table table-hover table-sm table-borderless">';
+          echo '<thead>';
+            echo '<tr style="border-bottom: 1px solid #333; border-bottom: 1px solid #333;">';
+              echo '<th colspan="3">Coin/Token value</th>';
+              echo '<th class="text-right">24h</th>';
+              echo '<th class="text-right">7d</th>';
+              echo '<th class="text-right">30d</th>';
+              echo '<th class="text-right">60d</th>';
+              echo '<th colspan="3">ATH</th>';
+              echo '<th class="text-center">Rank</th>';
+              echo '<th class="text-center">Circulating</th>';
+              echo '<th class="text-right" title="Value per circulating coin/token if total supply was 100,000,000"><i class="fa fa-coins"></i> <small><i class="far fa-question-circle"></i></small></th>';
+              echo '<th></th>';
             echo '</tr>';
-          }
+          echo '<thead>';
+          echo '<tbody>';
+            foreach($prices as $coin=>$price) {
+              $coinMeta = $api->getIdFromSymbol($coin);
+              $coinInfo = $api->getCoin($coinMeta->id);
+              echo '<tr>';
+                echo '<td class="text-right">';
+                  if($coinMeta) {
+                    echo '<a href="https://www.coingecko.com/en/coins/'.$coinMeta->id.'/'.strtolower($currency).'" target="_blank">';
+                  }
+                  echo '1 '.$assets[strtoupper($coin)].' '.strtoupper($coin);
+                  if($coinMeta) {
+                    echo '</a>';
+                  }
+                echo '</td>';
+                echo '<td> = </td>';
+                echo '<td class="text-right">'.number_format_nice($price[strtolower($currency)], 8).'&nbsp;'.$currencyLabel.'</td>';
+                $percRanges = [
+                  'price_change_percentage_24h',
+                  'price_change_percentage_7d',
+                  'price_change_percentage_30d',
+                  'price_change_percentage_60d',
+                ];
+                foreach($percRanges as $perc) {
+                  echo '<td class="text-right">';
+                    if($coinInfo) {
+                      $change = (float) $coinInfo->market_data->$perc;
+                      $changeClass = 'text-secondary';
+                      if($change > 0) {
+                        $changeClass = 'text-success';
+                      }
+                      else if($change < 0) {
+                        $changeClass = 'text-danger';
+                      }
+                      echo '<small class="'.$changeClass.'">'.number_format($change, 1);
+                      echo '&nbsp;%</small>';
+                    }
+                  echo '</td>';
+                }
+                echo '<td>';
+                  if($coinInfo) {
+                    $lastAth = strtotime($coinInfo->market_data->ath_date->{strtolower($currency)});
+                    $ago = ($now-$lastAth)/60/60;
+                    if($ago > 48) {
+                      $ago /= 24;
+                      if($ago > 30) {
+                        if($ago/30 > 12) {
+                          $ago = round($ago/365, 1);
+                          $agoLabel = 'years ago';
+                        }
+                        else {
+                          $ago = round($ago/30, 1);
+                          $agoLabel = 'months ago';
+                        }
+                      }
+                      else {
+                        $ago = round($ago);
+                        $agoLabel = 'days ago';
+                      }
+                    }
+                    else {
+                      $ago = round($ago);
+                      $agoLabel = 'hours ago';
+                    }
+                    echo '<span title="'.date('j.n.Y H:i', $lastAth).' '.date_default_timezone_get().'">'.$ago.' <small>'.$agoLabel.'</small></span>';
+                  }
+                echo '</td>';
+                echo '<td class="text-right">';
+                  if($coinInfo) {
+                    echo '<small>'.number_format_nice($coinInfo->market_data->ath->{strtolower($currency)}, 8);
+                    echo '&nbsp;'.$currencyLabel.'</small>';
+                  }
+                echo '</td>';
+                echo '<td class="text-right">';
+                  if($coinInfo) {
+                    echo '<span class="text-info">'.number_format($coinInfo->market_data->ath_change_percentage->{strtolower($currency)}, 1).'&nbsp;%</span>';
+                  }
+                echo '</td>';
+                echo '<td class="text-right">';
+                  if($coinInfo) {
+                    if($rank = $coinInfo->market_data->market_cap_rank) {
+                      $rankClass = 'text-secondary';
+                      if($rank <= 10) {
+                        $rankClass = 'text-success';
+                      }
+                      else if($rank <= 25) {
+                        $rankClass = 'text-warning';
+                      }
+                      echo '<span class="'.$rankClass.'">'.$rank.'</span>';
+                    }
+                  }
+                echo '</td>';
+                echo '<td class="text-center">';
+                  if($coinInfo) {
+                    $totalSupply = $coinInfo->market_data->total_supply;
+                    $circulatingSupply = $coinInfo->market_data->circulating_supply;
+                    if($totalSupply > 0 && $circulatingSupply > 0) {
+                      echo '<span title="'.number_format($circulatingSupply).' circulating / '.number_format($totalSupply).' total">'.number_format($circulatingSupply/$totalSupply*100).'&nbsp;%</span>';
+                    }
+                    else if($circulatingSupply > 0) {
+                      echo '<span title="'.number_format($circulatingSupply).' circulating">Σ</span>';
+                    }
+                  }
+                echo '</td>';
+                echo '<td class="text-right">';
+                  if($coinInfo) {
+                    if($circulatingSupply > 0 && $price[strtolower($currency)] > 0) {
+                      echo '<small class="text-secondary">'.number_format_nice($price[strtolower($currency)] * $circulatingSupply / 100000000);
+                      echo '&nbsp;'.$currencyLabel.'</small>';
+                    }
+                  }
+                echo '</td>';
+                echo '<td>';
+                  echo '<a class="coinInfoPopToggle" href="#" onclick="return false;"><i class="fa fa-link"></i></a>';
+                  echo '<div class="coinInfoPop" onclick="$(this).hide();">';
+                    echo '<a href="#" class="float-right" onclick="$(this).parent().hide(); return false;"><i class="fa fa-2x fa-times"></i></a>';
+                    echo '<strong>'.$coinInfo->name.'</strong> ('.strtoupper($coinInfo->symbol).')';
+
+                    echo '<div class="row links">';
+                      echo '<div class="col">';
+                        ob_start();
+                        foreach($coinInfo->links->homepage as $site) {
+                          if(!empty($site)) {
+                            echo '<a href="'.$site.'" target="_blank"><i class="fa fa-link"></i></a> ';
+                          }
+                        }
+                        foreach($coinInfo->links->announcement_url as $site) {
+                          if(!empty($site)) {
+                            echo '<a href="'.$site.'" target="_blank"><i class="fa fa-bullhorn"></i></a> ';
+                          }
+                        }
+                        $out = ob_get_clean();
+                        if(!empty($out))  {
+                          echo '<span>Websites</span>';
+                          echo $out;
+                        }
+
+                        // forums and chat
+                        ob_start();
+                        foreach($coinInfo->links->official_forum_url as $site) {
+                          if(!empty($site)) {
+                            echo '<a href="'.$site.'" target="_blank"><i class="fa fa-users"></i></a> ';
+                          }
+                        }
+                        foreach($coinInfo->links->chat_url as $site) {
+                          if(!empty($site)) {
+                            echo '<a href="'.$site.'" target="_blank"><i class="far fa-comment"></i></a> ';
+                          }
+                        }
+                        if(!empty($coinInfo->links->bitcointalk_thread_identifier)) {
+                          echo '<a href="https://bitcointalk.org/index.php?topic='.$coinInfo->links->bitcointalk_thread_identifier.'" target="_blank"><i class="fab fa-bitcoin"></i></a> ';
+                        }
+                        $out = ob_get_clean();
+                        if(!empty($out))  {
+                          echo '<span>Forums and chat</span>';
+                          echo $out;
+                        }
+                        
+                        // social networks
+                        ob_start();
+                        if(!empty($coinInfo->links->twitter_screen_name)) {
+                          echo '<a href="https://nitter.dark.fail/'.$coinInfo->links->twitter_screen_name.'" target="_blank"><i class="fab fa-twitter"></i></a> ';
+                        }
+                        if(!empty($coinInfo->links->facebook_username)) {
+                          echo '<a href="https://facebook.com/'.$coinInfo->links->facebook_username.'" target="_blank"><i class="fab fa-facebook-f"></i></a> ';
+                        }
+                        if(!empty($coinInfo->links->subreddit_url)) {
+                          echo '<a href="'.$coinInfo->links->subreddit_url.'" target="_blank"><i class="fab fa-reddit-alien"></i></a> ';
+                        }
+                        $out = ob_get_clean();
+                        if(!empty($out))  {
+                          echo '<span>Social networks</span>';
+                          echo $out;
+                        }
+                      
+                        echo '</div>';
+                      echo '<div class="col">';
+
+                        // blockchain sites
+                        ob_start();
+                        foreach($coinInfo->links->blockchain_site as $site) {
+                          if(!empty($site)) {
+                            echo '<a href="'.$site.'" target="_blank"><i class="fa fa-database"></i></a> ';
+                          }
+                        }
+                        $out = ob_get_clean();
+                        if(!empty($out))  {
+                          echo '<span>Blockchain sites</span>';
+                          echo $out;
+                        }
+
+                        // repos
+                        ob_start();
+                        foreach($coinInfo->links->repos_url->github as $site) {
+                          if(!empty($site)) {
+                            echo '<a href="'.$site.'" target="_blank"><i class="fab fa-github"></i></a> ';
+                          }
+                        }
+                        foreach($coinInfo->links->repos_url->bitbucket as $site) {
+                          if(!empty($site)) {
+                            echo '<a href="'.$site.'" target="_blank"><i class="fab fa-bitbucket"></i></a> ';
+                          }
+                        }
+                        $out = ob_get_clean();
+                        if(!empty($out))  {
+                          echo '<span>Repos</span>';
+                          echo $out;
+                        }
+
+                      echo '</div>';
+                    echo '</div>';
+
+                    if(!empty($coinInfo->description->en)) {
+                      echo '<p class="description"><span class="text-secondary">'.substr($coinInfo->description->en, 0, 300).'...</span> More info at <a href="https://www.coingecko.com/en/coins/'.$coinMeta->id.'" target="_blank">coingecko.com/'.$coinMeta->id.'</a></p>';
+                    }
+                  echo '</div>';
+                echo '</td>';
+              echo '</tr>';
+            }
+          echo '</tbody>';
         echo '</table>';
       echo '</div>';
     echo '</div>';
+    echo '<div class="row mt-3">';
+      echo '<div class="col">';
+        echo '<p>Last updated</p>';
+        echo '<p><small>Page rendered '.date('j.n.Y H:i', $now).' '.date_default_timezone_get().'</small><br>';
+        echo '<small>Balance config '.(is_numeric($lastUpdate) ? date('j.n.Y H:i', $lastUpdate) : 'unknown date').' '.date_default_timezone_get().'</small><br>';
+        echo '<small>Coingecko API  '.date('j.n.Y H:i').' '.date_default_timezone_get().'</small></p>';
+      echo '</div>';
+    echo '</div>';
   echo '</div>';
+?>
+
+  <script>
+    $('.coinInfoPopToggle').click(function() {
+      $('.coinInfoPop').hide();
+      $(this).next().show();
+    });
+    $('.coinInfoPop a').click(function(event) {
+      event.stopPropagation();
+    });
+  </script>
+
+<?php
 
   echo ob_get_clean();

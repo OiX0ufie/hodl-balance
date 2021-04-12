@@ -68,6 +68,31 @@
             .text-bigger {
                 font-size: 1.3em;
             }
+
+            .coinInfoPop {
+                display: none;
+                z-index: 10;
+                position: absolute;
+                top: -2rem;
+                left: 0;
+                width: 100%;
+                padding: 0.5rem 1rem 1rem;
+                background: rgb(50, 50, 50);
+            }
+            .coinInfoPop span {
+                display: block;
+                font-size: 0.7rem;
+                margin: 0.5rem 0 0.25rem;
+            }
+            .coinInfoPop .links a {
+                margin: 0.5rem 0.25rem;
+            }
+            .coinInfoPop .description {
+                margin: 1rem 0.5rem 0.5rem;
+            }
+            .coinInfoPop .description .text-secondary {
+                font-size: 1rem;
+            }
         </style>
         <script>
 
@@ -441,7 +466,7 @@
             });
         </script>
     </head>
-    <bdoy data-theme="dark">
+    <body data-theme="dark">
         <div id="toast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000" style="position: fixed; width: 35vmin; top: 2em; left: calc(50% - 17vmin); z-index: 9999; display:">
             <div class="toast-header">
                 <i style="margin-right: 0.5em;"></i>
