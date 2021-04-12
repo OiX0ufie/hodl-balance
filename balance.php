@@ -223,7 +223,7 @@
               echo '<th class="text-right">7d</th>';
               echo '<th class="text-right">30d</th>';
               echo '<th class="text-right">60d</th>';
-              echo '<th colspan="3">ATH</th>';
+              echo '<th colspan="3"><div class="d-none d-lg-block">ATH</div></th>';
               echo '<th class="text-center">Rank</th>';
               echo '<th class="text-center">Circulating</th>';
               echo '<th class="text-right" title="Value per circulating coin/token if total supply was 100,000,000"><i class="fa fa-coins"></i> <small><i class="far fa-question-circle"></i></small></th>';
@@ -269,6 +269,7 @@
                   echo '</td>';
                 }
                 echo '<td>';
+                  echo '<div class="d-none d-lg-block">';
                   if($coinInfo) {
                     $lastAth = strtotime($coinInfo->market_data->ath_date->{strtolower($currency)});
                     $ago = ($now-$lastAth)/60/60;
@@ -295,17 +296,22 @@
                     }
                     echo '<span title="'.date('j.n.Y H:i', $lastAth).' '.date_default_timezone_get().'">'.$ago.' <small>'.$agoLabel.'</small></span>';
                   }
+                  echo '</div>';
                 echo '</td>';
                 echo '<td class="text-right">';
+                  echo '<div class="d-none d-lg-block">';
                   if($coinInfo) {
                     echo '<small>'.number_format_nice($coinInfo->market_data->ath->{strtolower($currency)}, 8);
                     echo '&nbsp;'.$currencyLabel.'</small>';
                   }
+                  echo '</div>';
                 echo '</td>';
                 echo '<td class="text-right">';
+                  echo '<div class="d-none d-lg-block">';
                   if($coinInfo) {
                     echo '<span class="text-info">'.number_format($coinInfo->market_data->ath_change_percentage->{strtolower($currency)}, 1).'&nbsp;%</span>';
                   }
+                  echo '</div>';
                 echo '</td>';
                 echo '<td class="text-right">';
                   if($coinInfo) {
