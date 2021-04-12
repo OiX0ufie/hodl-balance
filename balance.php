@@ -74,7 +74,7 @@
   foreach($symbols as $symbol) {
     $image = $api->getCoinImage($symbol);
     if($image) {
-      $image = '<img src="'.$image.'" style="height: 1em;">';
+      $image = '<img src="'.$image.'" style="height: 1rem; margin: -3px 0 0 0;">';
     }
     $assets[$symbol] = $image;
   }
@@ -196,9 +196,9 @@
               echo '</div>';
             echo '</td>';
           }
-          echo '<td class="text-right text-info">'.round($percentage, 1).' %</td>';
-          echo '<td class="text-right text-bigger">'.number_format($symbolTotal->total, 2).' '.$currencyLabel.'</td>';
-          echo '<td>'.$assets[$symbol].' '.$symbol.' <span class="text-secondary">'.$symbolTotal->amount.'</span></td>';
+          echo '<td class="text-right text-secondary align-middle">'.round($percentage, 1).' %</td>';
+          echo '<td class="text-right text-bigger align-middle">'.number_format($symbolTotal->total, 2).' '.$currencyLabel.'</td>';
+          echo '<td class="align-middle">'.$assets[$symbol].' '.$symbol.' <span class="text-secondary">'.$symbolTotal->amount.'</span></td>';
         echo '</tr>';
       }
     echo '</tbody>';
