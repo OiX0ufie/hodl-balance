@@ -69,6 +69,10 @@
                 font-size: 1.3em;
             }
 
+            .walletContents {
+                display: none;
+            }
+
             .coinInfoPop {
                 display: none;
                 z-index: 10;

@@ -109,32 +109,39 @@
 
   echo '<table class="table table-borderless table-sm mt-2">';
     echo '<thead>';
-      echo '<tr>';
-        echo '<th colspan="3"><h5 class="mb-0">Balance</h5></th>';
-        echo '<th class="text-right text-bigger">'.number_format($total, 2).' '.$currencyLabel.'</th>';
-        echo '<th>total</th>';
-      echo '</tr>';
-      echo '<tr style="border-top: 1px solid #333; border-bottom: 1px solid #333;">';
-        echo '<th>Platform</th>';
-        echo '<th>Wallet</th>';
-        echo '<th colspan="3">Account</th>';
-      echo '</tr>';
-    echo '</thead>';
-    echo '<tbody style="border-bottom: 1px solid #333;">';
-      foreach($accounts as $account) {
-        echo '<tr>';
-          echo '<td>'.$account->platform.'</td>';
-          echo '<td>'.$account->wallet.'</td>';
-          echo '<td>'.$account->account.'</td>';
-          echo '<td class="text-right text-bigger">'.number_format($account->value, 2).' '.$currencyLabel.'</td>';
-          echo '<td>'.$assets[$account->symbol].' '.$account->symbol.' <span class="text-secondary">'.$account->amount.'</span></td>';
-        echo '</tr>';
-      }
-
       // show symbol stats
       echo '<tr style="border-top: 1px solid #333; border-bottom: 1px solid #333;">';
-        echo '<th colspan="5"><h5 class="mb-0 mt-3">Distribution</h5></th>';
+        echo '<th colspan="2"><h5 class="mb-0">Funds</h5></th>';
+        echo '<th class="text-right text-bigger">'.number_format($total, 2).' '.$currencyLabel.'</th>';
+        echo '<th><a class="float-right" href="#" onclick="$(\'.walletContents\').toggle(); return false;" title="toggle wallet contents"><i class="fa fa-wallet"></i></a>total</th>';
       echo '</tr>';
+    echo '</thead>';
+    echo '<tbody>';
+
+      // wallet contents
+      echo '<tr><td colspan="4" class="walletContents">';
+        echo '<table class="table table-borderless table-sm">';
+          echo '<thead>';
+            echo '<tr style="border-bottom: 1px solid #333;">';
+              echo '<th>Platform</th>';
+              echo '<th>Wallet</th>';
+              echo '<th colspan="3">Account</th>';
+            echo '</tr>';
+          echo '</thead>';
+          echo '<tbody style="border-bottom: 1px solid #333;">';
+            foreach($accounts as $account) {
+              echo '<tr>';
+                echo '<td>'.$account->platform.'</td>';
+                echo '<td>'.$account->wallet.'</td>';
+                echo '<td>'.$account->account.'</td>';
+                echo '<td class="text-right text-bigger">'.number_format($account->value, 2).' '.$currencyLabel.'</td>';
+                echo '<td>'.$assets[$account->symbol].' '.$account->symbol.' <span class="text-secondary">'.$account->amount.'</span></td>';
+              echo '</tr>';
+            }
+          echo '</tbody>';
+        echo '</table>';
+      echo '</tr>';
+
       uasort($totals, function($a, $b){
         if ($a->total == $b->total) {
           return 0;
@@ -147,7 +154,7 @@
         $percentage = $symbolTotal->total / $total * 100;
         echo '<tr>';
           if(1 == $iteration) {
-            echo '<td colspan="2" rowspan="'.sizeof($totals).'" style="position: relative;">';
+            echo '<td rowspan="'.sizeof($totals).'" style="position: relative; width: 42%;">';
               echo '<div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;">';
               if(sizeof($totals) > 0) : ?>
                 <?php
@@ -196,7 +203,6 @@
       }
     echo '</tbody>';
   echo '</table>';
-
 
   echo '<div class="container mt-3">';
     echo '<h5 class="">Market data</h5>';
@@ -446,27 +452,28 @@
         echo '</table>';
       echo '</div>';
     echo '</div>';
-    echo '<div class="row mt-3">';
+  ?>
+    <script>
+      $('.coinInfoPopToggle').click(function() {
+        $('.coinInfoPop').hide();
+        $(this).next().show();
+      });
+      $('.coinInfoPop a').click(function(event) {
+        event.stopPropagation();
+      });
+    </script>
+  <?php
+
+    echo '<div class="row mt-5 mb-3">';
       echo '<div class="col">';
-        echo '<p>Last updated</p>';
-        echo '<p><small>Page rendered '.date('j.n.Y H:i', $now).' '.date_default_timezone_get().'</small><br>';
-        echo '<small>Balance config '.(is_numeric($lastUpdate) ? date('j.n.Y H:i', $lastUpdate) : 'unknown date').' '.date_default_timezone_get().'</small><br>';
-        echo '<small>Coingecko API  '.date('j.n.Y H:i').' '.date_default_timezone_get().'</small></p>';
+        echo 'Last updated';
+        echo '<div class="row">';
+          echo '<div class="col"><small><span class="text-secondary">Page rendered</span> '.date('j.n.Y H:i', $now).' '.date_default_timezone_get().'</small></div>';
+          echo '<div class="col"><small><span class="text-secondary">Balance config</span> '.(is_numeric($lastUpdate) ? date('j.n.Y H:i', $lastUpdate) : 'unknown date').' '.date_default_timezone_get().'</small></div>';
+          echo '<div class="col"><small><span class="text-secondary">Coingecko API</span>  '.date('j.n.Y H:i').' '.date_default_timezone_get().'</small></div>';
+        echo '</div>';
       echo '</div>';
     echo '</div>';
   echo '</div>';
-?>
-
-  <script>
-    $('.coinInfoPopToggle').click(function() {
-      $('.coinInfoPop').hide();
-      $(this).next().show();
-    });
-    $('.coinInfoPop a').click(function(event) {
-      event.stopPropagation();
-    });
-  </script>
-
-<?php
 
   echo ob_get_clean();
