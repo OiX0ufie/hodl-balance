@@ -174,28 +174,30 @@
 
   echo '<pre>';
     echo $output;
-    echo "\n";
-    if($coins = $api->getCoins()) {
-      echo 'Charts: ';
-      foreach($prices as $symbol=>$price) {
-        foreach($coins as $coin) {
-          if($coin->symbol == strtolower($symbol)) {
+  echo '</pre>';
+
+  if($coins = $api->getCoins()) {
+    echo 'Charts: ';
+    foreach($prices as $symbol=>$price) {
+      foreach($coins as $coin) {
+        if($coin->symbol == strtolower($symbol)) {
+          echo '<div style="display: inline-block; margin: 0 0 0.3em 0.5em;">';
             $image = '';
             if(isset($assets[strtoupper($symbol)])) {
-              $image = '<img src="'.$assets[strtoupper($symbol)].'" style="margin-right: 0.25em;">';
+              $image = '<img src="'.$assets[strtoupper($symbol)].'" style="margin-left: 0.25em; margin-right: 0.25em;">';
             }
             echo '<a href="https://www.coingecko.com/en/coins/'.$coin->id.'/'.strtolower($currency).'" target="_blank">'.$image.strtoupper($symbol).'</a> ';
-            break;
-          }
+          echo '</div>';
+          break;
         }
       }
-      echo "\n\n";
-      // if($data = $this->call($apiCall)) {
-      //   foreach($data as $item) {
-      //       if($symbol == $item->symbol) {
-      //           return $item;
-      //       }
-      //   }
-      // }
     }
-  echo '</pre>';
+    echo "<br><br>";
+    // if($data = $this->call($apiCall)) {
+    //   foreach($data as $item) {
+    //       if($symbol == $item->symbol) {
+    //           return $item;
+    //       }
+    //   }
+    // }
+  }
