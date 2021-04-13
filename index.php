@@ -23,6 +23,7 @@
         <link rel="stylesheet" href="res/fontawesome/css/brands.min.css">
         <link rel="stylesheet" href="res/bootstrap/css/bootstrap-dark.min.css">
         <link rel="stylesheet" href="res/jquery-ui/jquery-ui.min.css">
+        <link rel="stylesheet" href="res/jquery-tablesorter/css/theme.custom.css">
         <script src="res/jquery.min.js"></script>
         <script src="res/js.cookie.min.js"></script>
         <script src="res/jquery-ui/jquery-ui.min.js"></script>

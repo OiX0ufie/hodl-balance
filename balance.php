@@ -218,19 +218,19 @@
         echo '<table class="table table-hover table-sm table-borderless" id="marketData">';
           echo '<thead>';
             echo '<tr style="border-bottom: 1px solid #333; border-bottom: 1px solid #333;">';
-              echo '<th colspan="2">Coin/Token</th>';
-              echo '<th class="text-right">Value</th>';
-              echo '<th class="text-right">24h</th>';
-              echo '<th class="text-right">7d</th>';
-              echo '<th class="text-right">30d</th>';
-              echo '<th class="text-right">60d</th>';
-              echo '<th><div class="d-none d-lg-block">ATH</div></th>';
-              echo '<th></th>';
-              echo '<th></th>';
-              echo '<th class="text-center">Rank</th>';
-              echo '<th class="text-center">Circulating</th>';
+              echo '<th colspan="2" title="Coin/Token symbol">Coin/Token</th>';
+              echo '<th class="text-right" title="Current value of one coin/token">Value</th>';
+              echo '<th class="text-right" title="Price change percentage in the last 24 hours">24h</th>';
+              echo '<th class="text-right" title="Price change percentage in the last 7 days">7d</th>';
+              echo '<th class="text-right" title="Price change percentage in the last 30 days">30d</th>';
+              echo '<th class="text-right" title="Price change percentage in the last 60 days">60d</th>';
+              echo '<th class="text-right d-none d-lg-table-cell" title="Last all time high">ATH</th>';
+              echo '<th class="text-right d-none d-lg-table-cell" title="All time high value">'.$currencyLabel.'</th>';
+              echo '<th class="text-right d-none d-lg-table-cell" title="Current price in relation to all time high">%</th>';
+              echo '<th class="text-center" title="Market cap rank">Rank</th>';
+              echo '<th class="text-center" title="Supply in circulation">Circulating</th>';
               echo '<th class="text-right" title="Value per circulating coin/token if total supply was 100,000,000"><i class="fa fa-coins"></i></th>';
-              echo '<th></th>';
+              echo '<th data-sorter="false"></th>';
             echo '</tr>';
           echo '<thead>';
           echo '<tbody>';
@@ -256,7 +256,7 @@
                   'price_change_percentage_60d',
                 ];
                 foreach($percRanges as $perc) {
-                  echo '<td class="text-right">';
+                  echo '<td class="text-right align-bottom">';
                     if($coinInfo) {
                       $change = (float) $coinInfo->market_data->$perc;
                       $changeClass = 'text-secondary';
@@ -302,9 +302,9 @@
                   }
                   $agoString = '<span title="'.date('j.n.Y H:i', $lastAth).' '.date_default_timezone_get().'">'.$ago.' <small>'.$agoLabel.'</small></span>';
                 }
-                echo '<td data-text="'.$agoValue.'">';
+                echo '<td data-text="'.$agoValue.'" class="text-right d-none d-lg-table-cell">';
                   if(!empty($agoString)) {
-                    echo '<div class="d-none d-lg-block">'.$agoString.'</div>';
+                    echo $agoString;
                   }
                 echo '</td>';
 
@@ -316,9 +316,9 @@
                   $athString .= '<small>'.number_format_nice($coinInfo->market_data->ath->{strtolower($currency)}, 8);
                   $athString .= '&nbsp;'.$currencyLabel.'</small>';
                 }
-                echo '<td data-text="'.$athValue.'" class="text-right">';
+                echo '<td data-text="'.$athValue.'" class="text-right align-bottom d-none d-lg-table-cell">';
                   if(!empty($athString)) {
-                    echo '<div class="d-none d-lg-block">'.$athString.'</div>';
+                    echo $athString;
                   }
                 echo '</td>';
 
@@ -329,9 +329,9 @@
                   $athValue = $coinInfo->market_data->ath_change_percentage->{strtolower($currency)};
                   $athString = '<span class="text-info">'.number_format($coinInfo->market_data->ath_change_percentage->{strtolower($currency)}, 1).'&nbsp;%</span>';
                 }
-                echo '<td data-text="'.$athValue.'" class="text-right">';
+                echo '<td data-text="'.$athValue.'" class="text-right d-none d-lg-table-cell">';
                   if(!empty($athString)) {
-                    echo '<div class="d-none d-lg-block">'.$athString.'</div>';
+                    echo $athString;
                   }
                 echo '</td>';
                 echo '<td class="text-right">';
@@ -370,7 +370,7 @@
                     $colString .= '&nbsp;'.$currencyLabel.'</small>';
                   }
                 }                
-                echo '<td class="text-right" data-text="'.$colValue.'">';
+                echo '<td class="text-right align-bottom" data-text="'.$colValue.'">';
                   if(!empty($colString)) {
                     echo $colString;
                   }
@@ -499,7 +499,8 @@
 
       $(function() {
         $("#marketData").tablesorter({
-          usNumberFormat: true
+          theme: 'custom',
+          sortList: [[2,1]]
         });
       });
     </script>
