@@ -229,7 +229,7 @@
               echo '<th></th>';
               echo '<th class="text-center">Rank</th>';
               echo '<th class="text-center">Circulating</th>';
-              echo '<th class="text-right" title="Value per circulating coin/token if total supply was 100,000,000"><i class="fa fa-coins"></i> <small><i class="far fa-question-circle"></i></small></th>';
+              echo '<th class="text-right" title="Value per circulating coin/token if total supply was 100,000,000"><i class="fa fa-coins"></i></th>';
               echo '<th></th>';
             echo '</tr>';
           echo '<thead>';
