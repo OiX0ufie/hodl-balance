@@ -215,15 +215,18 @@
           }
           return ($a[strtolower($currency)] > $b[strtolower($currency)]) ? -1 : 1;
         });
-        echo '<table class="table table-hover table-sm table-borderless">';
+        echo '<table class="table table-hover table-sm table-borderless" id="marketData">';
           echo '<thead>';
             echo '<tr style="border-bottom: 1px solid #333; border-bottom: 1px solid #333;">';
-              echo '<th colspan="3">Coin/Token value</th>';
+              echo '<th colspan="2">Coin/Token</th>';
+              echo '<th class="text-right">Value</th>';
               echo '<th class="text-right">24h</th>';
               echo '<th class="text-right">7d</th>';
               echo '<th class="text-right">30d</th>';
               echo '<th class="text-right">60d</th>';
-              echo '<th colspan="3"><div class="d-none d-lg-block">ATH</div></th>';
+              echo '<th><div class="d-none d-lg-block">ATH</div></th>';
+              echo '<th></th>';
+              echo '<th></th>';
               echo '<th class="text-center">Rank</th>';
               echo '<th class="text-center">Circulating</th>';
               echo '<th class="text-right" title="Value per circulating coin/token if total supply was 100,000,000"><i class="fa fa-coins"></i> <small><i class="far fa-question-circle"></i></small></th>';
@@ -245,7 +248,7 @@
                   }
                 echo '</td>';
                 echo '<td> = </td>';
-                echo '<td class="text-right">'.number_format_nice($price[strtolower($currency)], 8).'&nbsp;'.$currencyLabel.'</td>';
+                echo '<td class="text-right" data-text="'.number_format($price[strtolower($currency)], 8).'">'.number_format_nice($price[strtolower($currency)], 8).'&nbsp;'.$currencyLabel.'</td>';
                 $percRanges = [
                   'price_change_percentage_24h',
                   'price_change_percentage_7d',
@@ -268,50 +271,68 @@
                     }
                   echo '</td>';
                 }
-                echo '<td>';
-                  echo '<div class="d-none d-lg-block">';
-                  if($coinInfo) {
-                    $lastAth = strtotime($coinInfo->market_data->ath_date->{strtolower($currency)});
-                    $ago = ($now-$lastAth)/60/60;
-                    if($ago > 48) {
-                      $ago /= 24;
-                      if($ago > 30) {
-                        if($ago/30 > 12) {
-                          $ago = round($ago/365, 1);
-                          $agoLabel = 'years ago';
-                        }
-                        else {
-                          $ago = round($ago/30, 1);
-                          $agoLabel = 'months ago';
-                        }
+
+                // ATH time info
+                $agoValue = '';
+                $agoString = '';
+                if($coinInfo) {
+                  $lastAth = strtotime($coinInfo->market_data->ath_date->{strtolower($currency)});
+                  $agoValue = $lastAth;
+                  $ago = ($now-$lastAth)/60/60;
+                  if($ago > 48) {
+                    $ago /= 24;
+                    if($ago > 30) {
+                      if($ago/30 > 12) {
+                        $ago = round($ago/365, 1);
+                        $agoLabel = 'years ago';
                       }
                       else {
-                        $ago = round($ago);
-                        $agoLabel = 'days ago';
+                        $ago = round($ago/30, 1);
+                        $agoLabel = 'months ago';
                       }
                     }
                     else {
                       $ago = round($ago);
-                      $agoLabel = 'hours ago';
+                      $agoLabel = 'days ago';
                     }
-                    echo '<span title="'.date('j.n.Y H:i', $lastAth).' '.date_default_timezone_get().'">'.$ago.' <small>'.$agoLabel.'</small></span>';
                   }
-                  echo '</div>';
+                  else {
+                    $ago = round($ago);
+                    $agoLabel = 'hours ago';
+                  }
+                  $agoString = '<span title="'.date('j.n.Y H:i', $lastAth).' '.date_default_timezone_get().'">'.$ago.' <small>'.$agoLabel.'</small></span>';
+                }
+                echo '<td data-text="'.$agoValue.'">';
+                  if(!empty($agoString)) {
+                    echo '<div class="d-none d-lg-block">'.$agoString.'</div>';
+                  }
                 echo '</td>';
-                echo '<td class="text-right">';
-                  echo '<div class="d-none d-lg-block">';
-                  if($coinInfo) {
-                    echo '<small>'.number_format_nice($coinInfo->market_data->ath->{strtolower($currency)}, 8);
-                    echo '&nbsp;'.$currencyLabel.'</small>';
+
+                // ATH value
+                $athValue = '';
+                $athString = '';
+                if($coinInfo) {
+                  $athValue = $coinInfo->market_data->ath->{strtolower($currency)};
+                  $athString .= '<small>'.number_format_nice($coinInfo->market_data->ath->{strtolower($currency)}, 8);
+                  $athString .= '&nbsp;'.$currencyLabel.'</small>';
+                }
+                echo '<td data-text="'.$athValue.'" class="text-right">';
+                  if(!empty($athString)) {
+                    echo '<div class="d-none d-lg-block">'.$athString.'</div>';
                   }
-                  echo '</div>';
                 echo '</td>';
-                echo '<td class="text-right">';
-                  echo '<div class="d-none d-lg-block">';
-                  if($coinInfo) {
-                    echo '<span class="text-info">'.number_format($coinInfo->market_data->ath_change_percentage->{strtolower($currency)}, 1).'&nbsp;%</span>';
+
+                // ATH percentage
+                $athValue = '';
+                $athString = '';
+                if($coinInfo) {
+                  $athValue = $coinInfo->market_data->ath_change_percentage->{strtolower($currency)};
+                  $athString = '<span class="text-info">'.number_format($coinInfo->market_data->ath_change_percentage->{strtolower($currency)}, 1).'&nbsp;%</span>';
+                }
+                echo '<td data-text="'.$athValue.'" class="text-right">';
+                  if(!empty($athString)) {
+                    echo '<div class="d-none d-lg-block">'.$athString.'</div>';
                   }
-                  echo '</div>';
                 echo '</td>';
                 echo '<td class="text-right">';
                   if($coinInfo) {
@@ -339,14 +360,22 @@
                     }
                   }
                 echo '</td>';
-                echo '<td class="text-right">';
-                  if($coinInfo) {
-                    if($circulatingSupply > 0 && $price[strtolower($currency)] > 0) {
-                      echo '<small class="text-secondary">'.number_format_nice($price[strtolower($currency)] * $circulatingSupply / 100000000);
-                      echo '&nbsp;'.$currencyLabel.'</small>';
-                    }
+
+                $colValue = '';
+                $colString = '';
+                if($coinInfo) {
+                  if($circulatingSupply > 0 && $price[strtolower($currency)] > 0) {
+                    $colValue = number_format_nice($price[strtolower($currency)] * $circulatingSupply / 100000000);
+                    $colString .= '<small class="text-secondary">'.number_format_nice($price[strtolower($currency)] * $circulatingSupply / 100000000);
+                    $colString .= '&nbsp;'.$currencyLabel.'</small>';
+                  }
+                }                
+                echo '<td class="text-right" data-text="'.$colValue.'">';
+                  if(!empty($colString)) {
+                    echo $colString;
                   }
                 echo '</td>';
+
                 echo '<td>';
                   echo '<a class="coinInfoPopToggle" href="#" onclick="return false;"><i class="fa fa-link"></i></a>';
                   echo '<div class="coinInfoPop" onclick="$(this).hide();">';
@@ -466,6 +495,12 @@
       });
       $('.coinInfoPop a').click(function(event) {
         event.stopPropagation();
+      });
+
+      $(function() {
+        $("#marketData").tablesorter({
+          usNumberFormat: true
+        });
       });
     </script>
   <?php

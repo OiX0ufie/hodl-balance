@@ -26,6 +26,7 @@
         <script src="res/jquery.min.js"></script>
         <script src="res/js.cookie.min.js"></script>
         <script src="res/jquery-ui/jquery-ui.min.js"></script>
+        <script src="res/jquery-tablesorter/js/jquery.tablesorter.min.js"></script>
         <script src="res/bootstrap/js/bootstrap.min.js"></script>
         <script src="res/cryptoJS/rollups/aes.js"></script>
         <script src="res/cryptoJS/cryptojs-aes-format.js"></script>
