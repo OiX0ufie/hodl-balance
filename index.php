@@ -22,8 +22,10 @@
         <link rel="stylesheet" href="res/fontawesome/css/all.min.css">
         <link rel="stylesheet" href="res/fontawesome/css/brands.min.css">
         <link rel="stylesheet" href="res/bootstrap/css/bootstrap-dark.min.css">
+        <link rel="stylesheet" href="res/jquery-ui/jquery-ui.min.css">
         <script src="res/jquery.min.js"></script>
         <script src="res/js.cookie.min.js"></script>
+        <script src="res/jquery-ui/jquery-ui.min.js"></script>
         <script src="res/bootstrap/js/bootstrap.min.js"></script>
         <script src="res/cryptoJS/rollups/aes.js"></script>
         <script src="res/cryptoJS/cryptojs-aes-format.js"></script>
@@ -97,6 +99,14 @@
             .coinInfoPop .description .text-secondary {
                 font-size: 1rem;
             }
+
+            #walletEditor .dropMarker {
+                background-color: rgba(25, 25, 25, 0.8);
+            }
+            #walletEditor .move {
+                display: inline-block;
+                padding: 0.35rem;
+            }
         </style>
         <script>
 
@@ -138,48 +148,21 @@
                 }
             }
 
-            var moveEntry = function (elem, direction) {
-                var self = $(elem).parents('tr');
-                if('up' == direction) {
-                    $(self).insertBefore($(self).prev());
-                }
-                else if('down' == direction) {
-                    $(self).insertAfter($(self).next());
-                }
-                updateButtons(true);
-            }
-
             var updateButtons = function(highlightSaveButton) {
                 if(undefined == highlightSaveButton) {
                     highlightSaveButton = false;
                 }
                 var entries = $('#hodlForm .entry').length;
-                $('#hodlForm .entry').each(function(index) {
-                    $('button', this).addClass('d-none');
-                    // last entry
-                    if(index == entries-1) {
-                        $('button.addEntry', this).removeClass('d-none');
-                        if(entries > 1) {
-                            $('button.moveUp', this).removeClass('d-none');
-                        }
-                    }
-                    // all other entries
-                    else {
-                        $('button.removeEntry', this).removeClass('d-none');
-                        $('button.moveDown', this).removeClass('d-none');
-                        if(index > 0) {
-                            $('button.moveUp', this).removeClass('d-none');
-                        }
-                    }
-                });
                 if(highlightSaveButton) {
                     $('#saveButton').removeClass('btn-secondary');
                     $('#saveButton').addClass('btn-primary');
                     $('#cancelButton').removeClass('d-none');
                     $('#onlineStore').css('display', 'none');
+                    $('#showBalance').hide();
                 }
                 else {
                     $('#onlineStore').css('display', 'table-row');
+                    $('#showBalance').show();
                 }
             }
 
@@ -467,6 +450,15 @@
             $(document).ready(function() {
                 loadCookieData();
                 setAction(window.location.hash.substr(1));
+
+                $('#walletEditor').sortable({
+                    cursor: 'move',
+                    handle: '.move',
+                    placeholder: 'dropMarker',
+                    update: function(event, ui) {
+                        updateButtons(true);
+                    }
+                });
             });
         </script>
     </head>
@@ -549,15 +541,10 @@
                                             0.00&nbsp;Amount
                                             <small class="form-text text-muted">amount of crypto currency</small>
                                         </th>
-                                        <th class="align-top text-right">
-                                            <div class="btn-group">
-                                                <button type="button" class="btn btn-secondary" onclick="$('#importWrapper').removeClass('d-none'); return false;" title="import data"><i class="fa fa-upload"></i></button>
-                                                <button type="button" class="btn btn-secondary" onclick="deleteData();return false;" title="delete all data"><i class="fa fa-trash"></i></button>
-                                            </div>
-                                        </th>
+                                        <th></th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="walletEditor">
                                     <tr class="d-none entry-template">
                                         <td><input class="form-control" type="text" name="platform" oninput="updateButtons(true);"></td>
                                         <td><input class="form-control" type="text" name="wallet" oninput="updateButtons(true);"></td>
@@ -566,15 +553,24 @@
                                         <td><input class="form-control" type="text" name="amount" placeholder="0.00" oninput="updateButtons(true);"></td>
                                         <td>
                                             <div class="btn-group">
-                                                <button type="button" class="btn btn-default removeEntry d-none" onclick="removeEntry(this); return false;" title="remove account"><i class="fa fa-trash"></i></button>
-                                                <button type="button" class="btn btn-default addEntry d-none" onclick="addEntry(); return false;"><i class="fa fa-plus" title="add account"></i></button>
-                                                <button type="button" class="btn btn-default moveUp d-none" onclick="moveEntry(this, 'up'); return false;" title="move up"><i class="fa fa-chevron-up"></i></button>
-                                                <button type="button" class="btn btn-default moveDown d-none" onclick="moveEntry(this, 'down'); return false;" title="move down"><i class="fa fa-chevron-down"></i></button>
+                                                <button type="button" class="btn btn-default removeEntry" onclick="removeEntry(this); return false;" title="remove account"><i class="fa fa-trash"></i></button>
+                                                <a class="move" title="move account"><i class="fa fa-grip-lines"></i></a>
                                             </div>
                                         </td>
                                     </tr>
                                 </tbody>
                                 <tfoot>
+                                    <tr>
+                                        <td colspan="6">
+                                            <div class="btn-group float-right">
+                                                <button type="button" class="btn btn-default addEntry" onclick="addEntry(); return false;"><i class="fa fa-plus" title="add account"></i> add account</button>
+                                            </div>
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-secondary" onclick="$('#importWrapper').removeClass('d-none'); return false;" title="import data">import data <i class="fa fa-upload"></i></button>
+                                                <button type="button" class="btn btn-secondary" onclick="deleteData();return false;" title="delete all data">delete all <i class="fa fa-trash"></i></button>
+                                            </div>
+                                        </td>
+                                    </tr>
                                     <tr>
                                         <td colspan="2">
                                             <label>
@@ -619,7 +615,7 @@
                                             </label>
                                         </td>
                                         <td colspan="2" class="text-right align-bottom">
-                                            <button type="submit" id="saveButton" class="btn btn-secondary" onclick="saveFormData(); return false;" title="save form data">update data <i class="fa fa-cookie"></i></button>
+                                            <button type="submit" id="saveButton" class="btn btn-secondary" onclick="saveFormData(); return false;" title="save form data as browser cookie">save data <i class="fa fa-cookie"></i></button>
                                             <button type="reset" id="cancelButton" class="btn btn-secondary d-none" onclick="resetForm(); return false;" title="reset form data">cancel <i class="fa fa-ban"></i></button>
                                         </td>
                                     </tr>
