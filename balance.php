@@ -135,7 +135,7 @@
                 echo '<td>'.$account->wallet.'</td>';
                 echo '<td>'.$account->account.'</td>';
                 echo '<td class="text-right text-bigger">'.number_format($account->value, 2).' '.$currencyLabel.'</td>';
-                echo '<td>'.$assets[$account->symbol].' '.$account->symbol.' <span class="text-secondary">'.$account->amount.'</span></td>';
+                echo '<td>'.$assets[$account->symbol].' '.$account->symbol.' <span class="text-secondary">'.number_format_nice($account->amount, 8).'</span></td>';
               echo '</tr>';
             }
           echo '</tbody>';
@@ -198,32 +198,27 @@
           }
           echo '<td class="text-right text-secondary align-middle">'.round($percentage, 1).' %</td>';
           echo '<td class="text-right text-bigger align-middle">'.number_format($symbolTotal->total, 2).' '.$currencyLabel.'</td>';
-          echo '<td class="align-middle">'.$assets[$symbol].' '.$symbol.' <span class="text-secondary">'.$symbolTotal->amount.'</span></td>';
+          echo '<td class="align-middle">'.$assets[$symbol].' '.$symbol.' <span class="text-secondary">'.number_format_nice($symbolTotal->amount, 8).'</span></td>';
         echo '</tr>';
       }
     echo '</tbody>';
   echo '</table>';
 
   echo '<div class="container mt-3">';
-    echo '<h5 class="">Market data</h5>';
+    echo '<h5 class="">Market data <small class="text-muted">'.sizeof($totals).' coins/tokens</small></h5>';
     echo '<div class="row" style="border-top: 1px solid #333; border-bottom: 1px solid #333;">';
       echo '<div class="col">';
         // print general price info
-        uasort($prices, function($a, $b) use ($currency) {
-          if ($a[strtolower($currency)] == $b[strtolower($currency)]) {
-            return 0;
-          }
-          return ($a[strtolower($currency)] > $b[strtolower($currency)]) ? -1 : 1;
-        });
         echo '<table class="table table-hover table-sm table-borderless" id="marketData">';
           echo '<thead>';
             echo '<tr style="border-bottom: 1px solid #333; border-bottom: 1px solid #333;">';
               echo '<th colspan="2" title="Coin/Token symbol">Coin/Token</th>';
               echo '<th class="text-right" title="Current value of one coin/token">Value</th>';
+              echo '<th class="text-right" title="Current value of one coin/token">Holdings</th>';
               echo '<th class="text-right" title="Price change percentage in the last 24 hours">24h</th>';
               echo '<th class="text-right" title="Price change percentage in the last 7 days">7d</th>';
               echo '<th class="text-right" title="Price change percentage in the last 30 days">30d</th>';
-              echo '<th class="text-right" title="Price change percentage in the last 60 days">60d</th>';
+              // echo '<th class="text-right" title="Price change percentage in the last 60 days">60d</th>';
               echo '<th class="text-right d-none d-lg-table-cell" title="Last all time high">ATH</th>';
               echo '<th class="text-right d-none d-lg-table-cell" title="All time high value">'.$currencyLabel.'</th>';
               echo '<th class="text-right d-none d-lg-table-cell" title="Current price in relation to all time high">%</th>';
@@ -234,7 +229,8 @@
             echo '</tr>';
           echo '<thead>';
           echo '<tbody>';
-            foreach($prices as $coin=>$price) {
+            foreach($totals as $coin=>$holdings) {
+              $price = $prices[strtolower($coin)];
               $coinMeta = $api->getIdFromSymbol($coin);
               $coinInfo = $api->getCoin($coinMeta->id);
               echo '<tr>';
@@ -249,11 +245,12 @@
                 echo '</td>';
                 echo '<td> = </td>';
                 echo '<td class="text-right" data-text="'.number_format($price[strtolower($currency)], 8).'">'.number_format_nice($price[strtolower($currency)], 8).'&nbsp;'.$currencyLabel.'</td>';
+                echo '<td class="text-right align-bottom" data-text="'.number_format($holdings->total, 2).'"><small class="text-secondary">'.number_format($holdings->total).'&nbsp;'.$currencyLabel.'</small></td>';
                 $percRanges = [
                   'price_change_percentage_24h',
                   'price_change_percentage_7d',
                   'price_change_percentage_30d',
-                  'price_change_percentage_60d',
+                  // 'price_change_percentage_60d',
                 ];
                 foreach($percRanges as $perc) {
                   echo '<td class="text-right align-bottom">';
@@ -327,9 +324,9 @@
                 $athString = '';
                 if($coinInfo) {
                   $athValue = $coinInfo->market_data->ath_change_percentage->{strtolower($currency)};
-                  $athString = '<span class="text-info">'.number_format($coinInfo->market_data->ath_change_percentage->{strtolower($currency)}, 1).'&nbsp;%</span>';
+                  $athString = '<small class="text-info">'.number_format($coinInfo->market_data->ath_change_percentage->{strtolower($currency)}, 1).'&nbsp;%</small>';
                 }
-                echo '<td data-text="'.$athValue.'" class="text-right d-none d-lg-table-cell">';
+                echo '<td data-text="'.$athValue.'" class="text-right align-bottom d-none d-lg-table-cell">';
                   if(!empty($athString)) {
                     echo $athString;
                   }
@@ -348,15 +345,15 @@
                     }
                   }
                 echo '</td>';
-                echo '<td class="text-center">';
+                echo '<td class="text-center align-bottom">';
                   if($coinInfo) {
                     $totalSupply = $coinInfo->market_data->total_supply;
                     $circulatingSupply = $coinInfo->market_data->circulating_supply;
                     if($totalSupply > 0 && $circulatingSupply > 0) {
-                      echo '<span title="'.number_format($circulatingSupply).' circulating / '.number_format($totalSupply).' total">'.number_format($circulatingSupply/$totalSupply*100).'&nbsp;%</span>';
+                      echo '<small title="'.number_format($circulatingSupply).' circulating / '.number_format($totalSupply).' total">'.number_format($circulatingSupply/$totalSupply*100).'&nbsp;%</small>';
                     }
                     else if($circulatingSupply > 0) {
-                      echo '<span title="'.number_format($circulatingSupply).' circulating">Σ</span>';
+                      echo '<small title="'.number_format($circulatingSupply).' circulating">Σ</small>';
                     }
                   }
                 echo '</td>';
@@ -500,7 +497,7 @@
       $(function() {
         $("#marketData").tablesorter({
           theme: 'custom',
-          sortList: [[2,1]]
+          sortList: [[10,0]]
         });
       });
     </script>
