@@ -338,7 +338,7 @@
                       if($rank <= 10) {
                         $rankClass = 'text-success';
                       }
-                      else if($rank <= 25) {
+                      else if($rank <= 50) {
                         $rankClass = 'text-warning';
                       }
                       echo '<span class="'.$rankClass.'">'.$rank.'</span>';
