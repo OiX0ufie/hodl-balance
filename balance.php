@@ -215,9 +215,10 @@
               echo '<th colspan="2" title="Coin/Token symbol">Coin/Token</th>';
               echo '<th class="text-right" title="Current value of one coin/token">Value</th>';
               echo '<th class="text-right" title="Current value of one coin/token">Holdings</th>';
+              echo '<th class="text-right" title="Price change percentage in the last 1 hour">1h</th>';
               echo '<th class="text-right" title="Price change percentage in the last 24 hours">24h</th>';
               echo '<th class="text-right" title="Price change percentage in the last 7 days">7d</th>';
-              echo '<th class="text-right" title="Price change percentage in the last 30 days">30d</th>';
+              // echo '<th class="text-right" title="Price change percentage in the last 30 days">30d</th>';
               // echo '<th class="text-right" title="Price change percentage in the last 60 days">60d</th>';
               echo '<th class="text-right d-none d-lg-table-cell" title="Last all time high">ATH</th>';
               echo '<th class="text-right d-none d-lg-table-cell" title="All time high value">'.$currencyLabel.'</th>';
@@ -233,6 +234,9 @@
               $price = $prices[strtolower($coin)];
               $coinMeta = $api->getIdFromSymbol($coin);
               $coinInfo = $api->getCoin($coinMeta->id);
+              // echo '<pre>';
+              // print_r($coinInfo);
+              // die();
               echo '<tr>';
                 echo '<td class="text-right">';
                   if($coinMeta) {
@@ -247,15 +251,21 @@
                 echo '<td class="text-right" data-text="'.number_format($price[strtolower($currency)], 8).'">'.number_format_nice($price[strtolower($currency)], 8).'&nbsp;'.$currencyLabel.'</td>';
                 echo '<td class="text-right align-bottom" data-text="'.number_format($holdings->total, 2).'"><small class="text-secondary">'.number_format($holdings->total).'&nbsp;'.$currencyLabel.'</small></td>';
                 $percRanges = [
+                  'price_change_percentage_1h_in_currency',
                   'price_change_percentage_24h',
                   'price_change_percentage_7d',
-                  'price_change_percentage_30d',
+                  // 'price_change_percentage_30d',
                   // 'price_change_percentage_60d',
                 ];
                 foreach($percRanges as $perc) {
                   echo '<td class="text-right align-bottom">';
                     if($coinInfo) {
-                      $change = (float) $coinInfo->market_data->$perc;
+                      if(preg_match('/_currency$/i', $perc)) {
+                        $change = (float) $coinInfo->market_data->$perc->{strtolower($currency)};
+                      }
+                      else {
+                        $change = (float) $coinInfo->market_data->$perc;
+                      }
                       $changeClass = 'text-secondary';
                       if($change > 0) {
                         $changeClass = 'text-success';
