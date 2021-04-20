@@ -67,7 +67,7 @@
     }
   }
 
-  $colSizes = [9, 15, 18, 10];
+  $colSizes = [12, 20, 11, 10];
   $fullLine = 75;
 
   ob_start();

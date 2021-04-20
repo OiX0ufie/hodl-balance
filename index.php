@@ -76,6 +76,12 @@
             .walletContents {
                 display: none;
             }
+            .walletContents table tbody th {
+                padding-top: 1rem;
+            }
+            .walletContents table tbody {
+
+            }
 
             .coinInfoPop {
                 display: none;

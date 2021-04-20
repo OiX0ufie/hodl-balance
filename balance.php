@@ -107,6 +107,53 @@
     $accounts[$index]->value = $value;
   }
 
+  // prepare platforms and wallet totals
+  $platforms = [];
+  $wallets = [];
+  foreach($accounts as $account) {
+    $platformKey = sha1($account->platform);
+    if(!isset($platforms[$platformKey])) {
+      $platforms[$platformKey] = (object)[
+        'platform' => $account->platform,
+        'coins' => [],
+        'value' => 0,
+      ];
+    }
+    if(!isset($platforms[$platformKey]->coins[$account->symbol])) {
+      $platforms[$platformKey]->coins[$account->symbol] = 0;
+    }
+    $platforms[$platformKey]->coins[$account->symbol] += $account->amount;
+    $platforms[$platformKey]->value += $account->value;
+
+    $walletKey = sha1($account->platform.'/'.$account->wallet);
+    if(!isset($wallets[$walletKey])) {
+      $wallets[$walletKey] = (object)[
+        'platform' => $account->platform,
+        'wallet' => $account->wallet,
+        'coins' => [],
+        'value' => 0,
+      ];
+    }
+    if(!isset($wallets[$walletKey]->coins[$account->symbol])) {
+      $wallets[$walletKey]->coins[$account->symbol] = 0;
+    }
+    $wallets[$walletKey]->coins[$account->symbol] += $account->amount;
+    $wallets[$walletKey]->value += $account->value;
+  }
+  uasort($platforms, function($a, $b){
+    if ($a->value == $b->value) {
+      return 0;
+    }
+    return ($a->value > $b->value) ? -1 : 1;
+  });
+  uasort($wallets, function($a, $b){
+    if ($a->value == $b->value) {
+      return 0;
+    }
+    return ($a->value > $b->value) ? -1 : 1;
+  });
+  
+
   echo '<table class="table table-borderless table-sm mt-2">';
     echo '<thead>';
       // show symbol stats
@@ -120,22 +167,60 @@
 
       // wallet contents
       echo '<tr><td colspan="4" class="walletContents">';
-        echo '<table class="table table-borderless table-sm">';
+        echo '<table class="table table-hover table-striped table-sm">';
           echo '<thead>';
             echo '<tr style="border-bottom: 1px solid #333;">';
               echo '<th>Platform</th>';
               echo '<th>Wallet</th>';
-              echo '<th colspan="3">Account</th>';
+              echo '<th colspan="4">Account</th>';
             echo '</tr>';
           echo '</thead>';
           echo '<tbody style="border-bottom: 1px solid #333;">';
+
+            // print platform distribution
+            echo '<tr><th colspan="5" class="text-secondary">Platforms</th></tr>';
+            foreach($platforms as $platform) {
+              echo '<tr>';
+                echo '<td class="align-bottom">'.$platform->platform.'</td>';
+                echo '<td class="align-bottom text-secondary"><small>Σ</small></td>';
+                echo '<td class="align-bottom text-secondary"><small>Σ</small></td>';
+                echo '<td class="text-right align-bottom text-secondary">'.number_format($platform->value / $total * 100, 1).' %</td>';
+                echo '<td class="text-right text-bigger">'.number_format($platform->value, 2).' '.$currencyLabel.'</td>';
+                echo '<td class="align-bottom text-secondary"><small>';
+                  $coins = array_keys($platform->coins);
+                  sort($coins);
+                  echo implode(', ', $coins);
+                echo '</small></td>';
+              echo '</tr>';
+            }
+
+            // print wallet distribution
+            echo '<tr><th colspan="5" class="text-secondary">Wallets</th></tr>';
+            foreach($wallets as $wallet) {
+              echo '<tr>';
+                echo '<td class="align-bottom text-secondary">'.$wallet->platform.'</td>';
+                echo '<td class="align-bottom">'.$wallet->wallet.'</td>';
+                echo '<td class="align-bottom text-secondary"><small>Σ<small></td>';
+                echo '<td class="text-right align-bottom text-secondary">'.number_format($wallet->value / $total * 100, 1).' %</td>';
+                echo '<td class="text-right text-bigger">'.number_format($wallet->value, 2).' '.$currencyLabel.'</td>';
+                echo '<td class="align-bottom text-secondary"><small>';
+                  $coins = array_keys($wallet->coins);
+                  sort($coins);
+                  echo implode(', ', $coins);
+                echo '</small></td>';
+              echo '</tr>';
+            }
+
+            // print single accounts
+            echo '<tr><th colspan="5" class="text-secondary">Accounts</th></tr>';
             foreach($accounts as $account) {
               echo '<tr>';
-                echo '<td>'.$account->platform.'</td>';
-                echo '<td>'.$account->wallet.'</td>';
-                echo '<td>'.$account->account.'</td>';
+                echo '<td class="align-bottom text-secondary">'.$account->platform.'</td>';
+                echo '<td class="align-bottom text-secondary">'.$account->wallet.'</td>';
+                echo '<td class="align-bottom">'.$account->account.'</td>';
+                echo '<td class="text-right align-bottom text-secondary">'.number_format($account->value / $total * 100, 1).' %</td>';
                 echo '<td class="text-right text-bigger">'.number_format($account->value, 2).' '.$currencyLabel.'</td>';
-                echo '<td>'.$assets[$account->symbol].' '.$account->symbol.' <span class="text-secondary">'.number_format_nice($account->amount, 8).'</span></td>';
+                echo '<td class="align-bottom">'.$assets[$account->symbol].' '.$account->symbol.' <span class="text-secondary">'.number_format_nice($account->amount, 8).'</span></td>';
               echo '</tr>';
             }
           echo '</tbody>';
