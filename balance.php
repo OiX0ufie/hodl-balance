@@ -79,9 +79,6 @@
     $assets[$symbol] = $image;
   }
 
-  $colSizes = [9, 15, 18, 10];
-  $fullLine = 75;
-
   ob_start();
 
   $total = 0;
@@ -95,14 +92,14 @@
       ];
     }
     $price = $prices[strtolower($account->symbol)][strtolower($currency)];
+    $totals[$account->symbol]->amount += $account->amount;
     if(is_numeric($price)) {
       $value = round($price*$account->amount, 2);
       $total += $value;
-      $totals[$account->symbol]->amount += $account->amount;
       $totals[$account->symbol]->total += $value;
     }
     else {
-      $value = $price;
+      $value = 0;
     }
     $accounts[$index]->value = $value;
   }
@@ -184,7 +181,7 @@
                 echo '<td class="align-bottom">'.$platform->platform.'</td>';
                 echo '<td class="align-bottom text-secondary"><small>Σ</small></td>';
                 echo '<td class="align-bottom text-secondary"><small>Σ</small></td>';
-                echo '<td class="text-right align-bottom text-secondary">'.number_format($platform->value / $total * 100, 1).' %</td>';
+                echo '<td class="text-right align-bottom text-secondary">'.($total > 0 ? number_format($platform->value / $total * 100, 1) : '-').' %</td>';
                 echo '<td class="text-right text-bigger">'.number_format($platform->value, 2).' '.$currencyLabel.'</td>';
                 echo '<td class="align-bottom text-secondary"><small>';
                   $coins = array_keys($platform->coins);
@@ -201,7 +198,7 @@
                 echo '<td class="align-bottom text-secondary">'.$wallet->platform.'</td>';
                 echo '<td class="align-bottom">'.$wallet->wallet.'</td>';
                 echo '<td class="align-bottom text-secondary"><small>Σ<small></td>';
-                echo '<td class="text-right align-bottom text-secondary">'.number_format($wallet->value / $total * 100, 1).' %</td>';
+                echo '<td class="text-right align-bottom text-secondary">'.($total > 0 ? number_format($wallet->value / $total * 100, 1) : '-').' %</td>';
                 echo '<td class="text-right text-bigger">'.number_format($wallet->value, 2).' '.$currencyLabel.'</td>';
                 echo '<td class="align-bottom text-secondary"><small>';
                   $coins = array_keys($wallet->coins);
@@ -218,7 +215,7 @@
                 echo '<td class="align-bottom text-secondary">'.$account->platform.'</td>';
                 echo '<td class="align-bottom text-secondary">'.$account->wallet.'</td>';
                 echo '<td class="align-bottom">'.$account->account.'</td>';
-                echo '<td class="text-right align-bottom text-secondary">'.number_format($account->value / $total * 100, 1).' %</td>';
+                echo '<td class="text-right align-bottom text-secondary">'.($total > 0 ? number_format($account->value / $total * 100, 1) : '-').' %</td>';
                 echo '<td class="text-right text-bigger">'.number_format($account->value, 2).' '.$currencyLabel.'</td>';
                 echo '<td class="align-bottom">'.$assets[$account->symbol].' '.$account->symbol.' <span class="text-secondary">'.number_format_nice($account->amount, 8).'</span></td>';
               echo '</tr>';
@@ -236,7 +233,10 @@
       $iteration = 0;
       foreach($totals as $symbol=>$symbolTotal) {
         $iteration++;
-        $percentage = $symbolTotal->total / $total * 100;
+        $percentage = false;
+        if($total > 0) {
+          $percentage = $symbolTotal->total / $total * 100;
+        }
         echo '<tr>';
           if(1 == $iteration) {
             echo '<td rowspan="'.sizeof($totals).'" style="position: relative; width: 42%;">';
@@ -281,7 +281,7 @@
               echo '</div>';
             echo '</td>';
           }
-          echo '<td class="text-right text-secondary align-middle">'.round($percentage, 1).' %</td>';
+          echo '<td class="text-right text-secondary align-middle">'.(false === $percentage ? '-' : round($percentage, 1)).' %</td>';
           echo '<td class="text-right text-bigger align-middle">'.number_format($symbolTotal->total, 2).' '.$currencyLabel.'</td>';
           echo '<td class="align-middle">'.$assets[$symbol].' '.$symbol.' <span class="text-secondary">'.number_format_nice($symbolTotal->amount, 8).'</span></td>';
         echo '</tr>';
@@ -318,6 +318,12 @@
             foreach($totals as $coin=>$holdings) {
               $price = $prices[strtolower($coin)];
               $coinMeta = $api->getIdFromSymbol($coin);
+              if(!$coinMeta) {
+                echo '<tr><td colspan="14">';
+                  echo $assets[strtoupper($coin)].' '.strtoupper($coin).' <small>market data unavailable</small>';
+                echo '</td></tr>';
+                continue;
+              }
               $coinInfo = $api->getCoin($coinMeta->id);
               // echo '<pre>';
               // print_r($coinInfo);

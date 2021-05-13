@@ -12,12 +12,14 @@
               return 'Error: cannot write cache';
             }
             else {
-              if(file_exists($cacheFile) && filemtime($cacheFile)+$cacheDuration > time()) {
+              if(file_exists($cacheFile) && filesize($cacheFile) > 0 && (filemtime($cacheFile)+$cacheDuration) > time()) {
                 $data = file_get_contents($cacheFile);
               }   
               else {
-                $data = file_get_contents($apiUrl);
-                file_put_contents($cacheFile, $data);
+                if($data = file_get_contents($apiUrl)) {
+                    file_put_contents($cacheFile, $data);
+                    usleep(250000);
+                }
               }
             }
             return json_decode($data);
