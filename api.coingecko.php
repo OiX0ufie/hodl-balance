@@ -29,6 +29,11 @@
             $apiCall = '/coins/list';
             if($data = $this->call($apiCall)) {
                 foreach($data as $item) {
+                    if($symbol == $item->id) {
+                        return $item;
+                    }
+                }
+                foreach($data as $item) {
                     if($symbol == $item->symbol) {
                         return $item;
                     }
@@ -127,8 +132,8 @@
             return false;
         }
 
-        public function getCoin($symbol) {
-            $apiCall = '/coins/'.$symbol;
+        public function getCoin($id) {
+            $apiCall = '/coins/'.$id;
             $cacheDuration = 60*60*12;  // 12 hours
             return $this->call($apiCall, $cacheDuration);
         }
