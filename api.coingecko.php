@@ -8,6 +8,7 @@
             $cacheFile = __DIR__ . '/cache/'.md5($apiUrl).'.cache';
         
             ob_start();
+            $data = false;
             if(!is_writable(dirname($cacheFile))) {
               return 'Error: cannot write cache';
             }
@@ -15,11 +16,9 @@
               if(file_exists($cacheFile) && filesize($cacheFile) > 0 && (filemtime($cacheFile)+$cacheDuration) > time()) {
                 $data = file_get_contents($cacheFile);
               }   
-              else {
-                if($data = file_get_contents($apiUrl)) {
-                    file_put_contents($cacheFile, $data);
-                    usleep(250000);
-                }
+              else if($data = file_get_contents($apiUrl)) {
+                file_put_contents($cacheFile, $data, LOCK_EX);
+                usleep(250000);
               }
             }
             return json_decode($data);
