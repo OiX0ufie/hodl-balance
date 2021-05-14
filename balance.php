@@ -313,7 +313,7 @@
           echo '<td class="align-middle">';
             echo (false == $asset->symbol ? $symbol : $asset->image_thumb.' '.strtoupper($asset->symbol));
             echo ' <span class="text-secondary">'.number_format_nice($asset->amount, 8).'</span>';
-            echo (false != $asset->name ? ' <small>'.$asset->name.'</small>' : '');
+            echo (false != $asset->name ? ' <small class="d-none d-lg-inline">'.$asset->name.'</small>' : '');
           echo '</td>';
         echo '</tr>';
       }
