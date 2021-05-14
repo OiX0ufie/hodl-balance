@@ -576,6 +576,7 @@
                                             <div class="btn-group">
                                                 <button type="button" class="btn btn-secondary" onclick="$('#importWrapper').removeClass('d-none'); return false;" title="import data">import data <i class="fa fa-upload"></i></button>
                                                 <button type="button" class="btn btn-secondary" onclick="deleteData();return false;" title="delete all data">delete all <i class="fa fa-trash"></i></button>
+                                                <button type="button" class="btn btn-secondary" onclick="exportData();return false;" title="export configuration data">export data <i class="fa fa-download"></i></button>
                                             </div>
                                         </td>
                                     </tr>
@@ -623,7 +624,7 @@
                                             </label>
                                         </td>
                                         <td colspan="2" class="text-right align-bottom">
-                                            <button type="submit" id="saveButton" class="btn btn-secondary" onclick="saveFormData(); return false;" title="save form data as browser cookie">save data <i class="fa fa-cookie"></i></button>
+                                            <button type="submit" id="saveButton" class="btn btn-secondary" onclick="saveFormData(); return false;" title="save form data as browser cookie">save in browser <i class="fa fa-cookie"></i></button>
                                             <button type="reset" id="cancelButton" class="btn btn-secondary d-none" onclick="resetForm(); return false;" title="reset form data">cancel <i class="fa fa-ban"></i></button>
                                         </td>
                                     </tr>
@@ -640,8 +641,8 @@
                                             </label>
                                         </td>
                                         <td colspan="3" class="align-middle">
-                                            <button type="button" class="btn btn-secondary" onclick="saveOnline(); return false;" title="save data">persist online <i class="fa fa-cloud-upload-alt"></i></button>
-                                            <button type="button" class="btn btn-secondary" onclick="loadOnline(); return false;" title="load data">load <i class="fa fa-cloud-download-alt"></i></button>
+                                            <button type="button" class="btn btn-secondary" onclick="saveOnline(); return false;" title="save data on server">save online <i class="fa fa-cloud-upload-alt"></i></button>
+                                            <button type="button" class="btn btn-secondary" onclick="loadOnline(); return false;" title="load data from server">load <i class="fa fa-cloud-download-alt"></i></button>
                                         </td>
                                     </tr>
                                 </tfoot>
@@ -656,8 +657,6 @@
                     <hr class="my-4">
                     <p class="lead text-center">
                         <a class="btn btn-primary btn-lg" href="?#balance" onclick="setAction('balance'); return false;" role="button">show balance <i class="fa fa-coins"></i></a>
-                        <small class="ml-5">configuration</small>
-                        <a class="btn btn-secondary btn-sm" href="?" onclick="exportData(); return false;" role="button">export <i class="fa fa-download"></i></a>
                     </p>
                 </div>
             </div>
