@@ -29,12 +29,12 @@
             $apiCall = '/coins/list';
             if($data = $this->call($apiCall)) {
                 foreach($data as $item) {
-                    if($symbol == $item->id) {
+                    if($symbol == $item->symbol) {
                         return $item;
                     }
                 }
                 foreach($data as $item) {
-                    if($symbol == $item->symbol) {
+                    if($symbol == $item->id) {
                         return $item;
                     }
                 }
